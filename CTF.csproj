@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net4.8</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="MCGalaxy_">
+      <HintPath>..\..\GitHub\MCGalaxy\bin\Debug\MCGalaxy_.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>
