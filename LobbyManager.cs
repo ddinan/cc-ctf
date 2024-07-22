@@ -22,13 +22,21 @@ namespace CTF
             p.Message($"&SNew lobby created with ID &b{newLobby.LobbyId}&7.");
 
             // Immediately join the new lobby after creating it.
-            JoinLobby(p, newLobby.LobbyId);
+            if (p != Player.Console)
+            {
+                JoinLobby(p, newLobby.LobbyId);
+            }
+            else
+            {
+                Server.SetMainLevel(map); // Set the main level so new players automatically join the lobby.
+            }
+
             newLobby.StartGame();
 
             nextLobbyId++;
         }
 
-        public static void JoinLobby(Player p, int lobbyId)
+        public static void JoinLobby(Player p, int lobbyId, bool justConnected = false)
         {
             Lobby lobby = FindLobbyById(lobbyId);
 
@@ -49,7 +57,7 @@ namespace CTF
                 LeaveLobby(p);
             }
 
-            if (lobby.Map != null)
+            if (lobby.Map != null && !justConnected)
             {
                 PlayerActions.ChangeMap(p, lobby.Map);
             }

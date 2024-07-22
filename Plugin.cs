@@ -1,4 +1,5 @@
 ﻿using MCGalaxy;
+using MCGalaxy.Events.PlayerEvents;
 using System.Collections.Generic;
 
 namespace CTF
@@ -13,6 +14,10 @@ namespace CTF
         {
             Command.Register(new CmdJoinTeam());
             Command.Register(new CmdLobby());
+
+            OnPlayerFinishConnectingEvent.Register(HandlePlayerFinishConnecting, Priority.Low);
+
+            LobbyManager.CreateNewLobby(Player.Console); // Create the default lobby.
         }
 
         public override void Unload(bool shutdown)
@@ -20,8 +25,9 @@ namespace CTF
             Command.Unregister(Command.Find("JoinTeam"));
             Command.Unregister(Command.Find("Lobby"));
 
-            // Create a copy of the lobbies list to avoid enumeration errors.
-            List<Lobby> lobbiesCopy = new List<Lobby>(LobbyManager.GetLobbies());
+            OnPlayerFinishConnectingEvent.Unregister(HandlePlayerFinishConnecting);
+
+            List<Lobby> lobbiesCopy = new List<Lobby>(LobbyManager.GetLobbies()); // Create a copy of the lobbies list to avoid enumeration errors.
 
             foreach (Lobby lobby in lobbiesCopy)
             {
@@ -31,6 +37,11 @@ namespace CTF
 
         public override void Help(Player p)
         {
+        }
+
+        void HandlePlayerFinishConnecting(Player p)
+        {
+            LobbyManager.JoinLobby(p, 1, true);
         }
     }
 }

@@ -45,7 +45,7 @@ namespace CTF
                 Players.Remove(p);
 
                 // Check if lobby is now empty.
-                if (Players.Count == 0)
+                if (Players.Count == 0 && LobbyId != 1)
                 {
                     LobbyManager.DeleteEmptyLobby(this);
                 }
@@ -80,6 +80,11 @@ namespace CTF
 
             if (Map != null)
             {
+                if (LobbyId == 1)
+                {
+                    Server.SetMainLevel(map);
+                }
+
                 if (!LevelActions.Delete(Player.Console, $"{Map.name.ToLower()}")) return; // Delete the old map.
             }
 
