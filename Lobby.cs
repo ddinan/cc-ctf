@@ -19,12 +19,18 @@ namespace CTF
         public SchedulerTask Task;
         public Level Map = null;
 
+        private MapVoting mapVoting;
+
         public Lobby(int lobbyId, int gameDurationMinutes = 1)
         {
+            LobbyId = lobbyId;
             LobbyId = lobbyId;
             Players = new List<Player>();
             IsGameRunning = false;
             GameDurationMinutes = gameDurationMinutes;
+
+            List<string> availableMaps = new List<string> { "map1", "map2", "map3", "map4" };
+            mapVoting = new MapVoting(this, availableMaps);
         }
 
         public void AddPlayer(Player p)
@@ -54,6 +60,30 @@ namespace CTF
         public void StartGame()
         {
             if (IsGameRunning) return;
+
+            ScheduleInitialGameStartCheck();
+        }
+
+        public void StartNextMap(string lvl)
+        {
+            string map = $"lobby{LobbyId}_" + lvl;
+            if (!LevelActions.Copy(Player.Console, lvl, map)) return;
+            LevelActions.Load(Player.Console, map, false);
+            Level newLevel = LevelInfo.FindExact(map);
+
+            // Send players in the lobby to the new map.
+
+            foreach (Player p in Players)
+            {
+                PlayerActions.ChangeMap(p, newLevel);
+            }
+
+            if (Map != null)
+            {
+                if (!LevelActions.Delete(Player.Console, $"{Map.name.ToLower()}")) return; // Delete the old map.
+            }
+
+            Map = newLevel; // Set the lobby's active map.
 
             ScheduleInitialGameStartCheck();
         }
@@ -118,8 +148,16 @@ namespace CTF
             IsGameRunning = false;
             GameEndTime = DateTime.MinValue;
 
-            BluePlayers.Clear();
-            RedPlayers.Clear();
+            if (BluePlayers.Count > 0)
+            {
+                BluePlayers.Clear();
+            }
+
+
+            if (RedPlayers.Count > 0)
+            {
+                RedPlayers.Clear();
+            }
 
             // Perform end of game tasks like displaying scores, cleanup, etc.
             Server.MainScheduler.Cancel(Task);
@@ -127,11 +165,16 @@ namespace CTF
             if (shutdown)
             {
                 LobbyManager.DeleteEmptyLobby(this);
+                return;
             }
+
+            mapVoting.StartMapVoting();
         }
 
         public void MessagePlayers(string message)
         {
+            if (Map == null) return;
+
             Map.Message(message);
         }
     }
