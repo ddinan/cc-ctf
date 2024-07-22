@@ -15,6 +15,7 @@ namespace CTF
         public DateTime GameEndTime { get; private set; }
 
         public SchedulerTask Task;
+        public Level Map = null;
 
         public Lobby(int lobbyId, int gameDurationMinutes = 1)
         {
@@ -35,7 +36,7 @@ namespace CTF
             {
                 Players.Remove(p);
 
-                // Check if lobby is now empty
+                // Check if lobby is now empty.
                 if (Players.Count == 0)
                 {
                     LobbyManager.DeleteEmptyLobby(this);
@@ -83,7 +84,7 @@ namespace CTF
             // Example: Check if any team has won, update player states, etc.
         }
 
-        public void EndGame()
+        public void EndGame(bool shutdown = false)
         {
             MessagePlayers($"&SGame ended in Lobby {LobbyId}!");
 
@@ -93,14 +94,16 @@ namespace CTF
 
             // Perform end of game tasks like displaying scores, cleanup, etc.
             Server.MainScheduler.Cancel(Task);
+
+            if (shutdown)
+            {
+                LobbyManager.DeleteEmptyLobby(this);
+            }
         }
 
         public void MessagePlayers(string message)
         {
-            foreach (Player p in Players)
-            {
-                p.Message(message);
-            }
+            Map.Message(message);
         }
     }
 }

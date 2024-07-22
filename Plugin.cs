@@ -18,7 +18,7 @@ namespace CTF
             Command.Unregister(Command.Find("Lobby"));
 
             foreach (Lobby lobby in LobbyManager.GetLobbies()) {
-                lobby.EndGame();
+                lobby.EndGame(true);
             }
         }
 

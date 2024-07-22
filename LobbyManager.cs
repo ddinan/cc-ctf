@@ -3,6 +3,7 @@ using MCGalaxy.DB;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Security.Cryptography;
 using System.Threading;
 
 namespace CTF
@@ -10,17 +11,22 @@ namespace CTF
     internal class LobbyManager
     {
         public static List<Lobby> lobbies = new List<Lobby>();
-        public static int nextLobbyId = 1; // Starting lobby ID
+        public static int nextLobbyId = 1; // Starting lobby ID.
 
         public static void CreateNewLobby(Player p)
         {
             Lobby newLobby = new Lobby(nextLobbyId);
             lobbies.Add(newLobby);
 
-            p.Message($"&SNew lobby created with ID &b{nextLobbyId}&7.");
+            string map = $"lobby{newLobby.LobbyId}_map1";
+            if (!LevelActions.Copy(p, "map1", map)) return;
+            LevelActions.Load(p, map, false);
+            newLobby.Map = LevelInfo.FindExact(map); // Set the lobby's active map.
 
-            // Immediately join the new lobby after creating it
-            JoinLobby(p, nextLobbyId);
+            p.Message($"&SNew lobby created with ID &b{newLobby.LobbyId}&7.");
+
+            // Immediately join the new lobby after creating it.
+            JoinLobby(p, newLobby.LobbyId);
 
             nextLobbyId++;
         }
@@ -28,6 +34,7 @@ namespace CTF
         public static void JoinLobby(Player p, int lobbyId)
         {
             Lobby lobby = FindLobbyById(lobbyId);
+
             if (lobby == null)
             {
                 p.Message($"&cLobby with ID {lobbyId} not found.");
@@ -45,11 +52,16 @@ namespace CTF
                 LeaveLobby(p);
             }
 
+            if (lobby.Map != null)
+            {
+                PlayerActions.ChangeMap(p, lobby.Map);
+            }
+
             lobby.AddPlayer(p);
 
             lobby.MessagePlayers($"&a+ &b{p.truename} &Sjoined the lobby &5({lobby.Players.Count} players)&S.");
 
-            // If enough players have joined, start the game
+            // If enough players have joined, start the game.
             if (lobby.Players.Count >= 2)
             {
                 lobby.StartGame();
@@ -70,7 +82,7 @@ namespace CTF
                     return lobby;
                 }
             }
-            return null; // Lobby with specified ID not found
+            return null; // Lobby with specified ID not found.
         }
 
         public static List<Lobby> GetLobbies()
@@ -105,6 +117,11 @@ namespace CTF
 
         public static void DeleteEmptyLobby(Lobby lobby)
         {
+            if (lobby.Map != null)
+            {
+                if (!LevelActions.Delete(Player.Console, $"{lobby.Map.name.ToLower()}")) return;
+            }
+
             lobbies.Remove(lobby);
             Console.WriteLine($"Lobby {lobby.LobbyId} has been deleted because it is empty.");
         }
