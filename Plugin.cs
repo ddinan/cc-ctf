@@ -1,4 +1,5 @@
 ﻿using MCGalaxy;
+using System.Collections.Generic;
 
 namespace CTF
 {
@@ -19,7 +20,11 @@ namespace CTF
             Command.Unregister(Command.Find("JoinTeam"));
             Command.Unregister(Command.Find("Lobby"));
 
-            foreach (Lobby lobby in LobbyManager.GetLobbies()) {
+            // Create a copy of the lobbies list to avoid enumeration errors.
+            List<Lobby> lobbiesCopy = new List<Lobby>(LobbyManager.GetLobbies());
+
+            foreach (Lobby lobby in lobbiesCopy)
+            {
                 lobby.EndGame(true);
             }
         }
