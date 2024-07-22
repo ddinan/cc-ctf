@@ -52,8 +52,7 @@ namespace CTF
                 return;
             }
 
-            int id;
-            if (!int.TryParse(args[1], out id))
+            if (!int.TryParse(args[1], out int id))
             {
                 p.Message("Invalid lobby ID. Use /lobby list to see a list.");
                 return;

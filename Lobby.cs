@@ -2,7 +2,6 @@
 using MCGalaxy.Tasks;
 using System;
 using System.Collections.Generic;
-using System.Threading;
 
 namespace CTF
 {
@@ -13,6 +12,9 @@ namespace CTF
         public bool IsGameRunning { get; private set; }
         public int GameDurationMinutes { get; private set; }
         public DateTime GameEndTime { get; private set; }
+
+        public List<Player> BluePlayers = new List<Player>();
+        public List<Player> RedPlayers = new List<Player>();
 
         public SchedulerTask Task;
         public Level Map = null;
@@ -53,17 +55,38 @@ namespace CTF
         {
             if (IsGameRunning) return;
 
-            if (Players.Count < 2)
+            ScheduleInitialGameStartCheck();
+
+            MessagePlayers($"Game starting in Lobby {LobbyId} will commence once each team has at least one player.");
+        }
+
+        private bool initialCheckScheduled = false;
+
+        private void ScheduleInitialGameStartCheck()
+        {
+            Server.MainScheduler.QueueRepeat(CheckTeamsAndStartGame, null, TimeSpan.FromSeconds(10));
+            initialCheckScheduled = true;
+        }
+
+        private void CheckTeamsAndStartGame(SchedulerTask task)
+        {
+            // Check if there is at least one player on each team.
+            if (BluePlayers.Count > 0 && RedPlayers.Count > 0)
             {
-                MessagePlayers($"Cannot start game in Lobby {LobbyId}: Not enough players.");
-                return;
+                // Ensure the initial check task is canceled once conditions are met.
+                if (initialCheckScheduled)
+                {
+                    Server.MainScheduler.Cancel(task);
+                    initialCheckScheduled = false;
+                }
+
+                // Start the game
+                MessagePlayers($"Game started in Lobby {LobbyId}!");
+                IsGameRunning = true;
+                GameEndTime = DateTime.Now.AddMinutes(GameDurationMinutes);
+
+                Server.MainScheduler.QueueRepeat(GameLoop, null, TimeSpan.FromSeconds(1));
             }
-
-            MessagePlayers($"Game started in Lobby {LobbyId}!");
-            IsGameRunning = true;
-            GameEndTime = DateTime.Now.AddMinutes(GameDurationMinutes);
-
-            Server.MainScheduler.QueueRepeat(GameLoop, null, TimeSpan.FromSeconds(1));
         }
 
         private void GameLoop(SchedulerTask task)
@@ -91,6 +114,9 @@ namespace CTF
             // Reset game state
             IsGameRunning = false;
             GameEndTime = DateTime.MinValue;
+
+            BluePlayers.Clear();
+            RedPlayers.Clear();
 
             // Perform end of game tasks like displaying scores, cleanup, etc.
             Server.MainScheduler.Cancel(Task);

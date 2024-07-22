@@ -10,11 +10,13 @@ namespace CTF
 
         public override void Load(bool startup)
         {
+            Command.Register(new CmdJoinTeam());
             Command.Register(new CmdLobby());
         }
 
         public override void Unload(bool shutdown)
         {
+            Command.Unregister(Command.Find("JoinTeam"));
             Command.Unregister(Command.Find("Lobby"));
 
             foreach (Lobby lobby in LobbyManager.GetLobbies()) {

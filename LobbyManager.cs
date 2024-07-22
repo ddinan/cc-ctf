@@ -1,10 +1,6 @@
 ﻿using MCGalaxy;
-using MCGalaxy.DB;
 using System;
 using System.Collections.Generic;
-using System.Numerics;
-using System.Security.Cryptography;
-using System.Threading;
 
 namespace CTF
 {
@@ -47,7 +43,7 @@ namespace CTF
                 return;
             }
 
-            if (IsPlayerInLobby(p))
+            if (GetPlayerLobby(p) != null)
             {
                 LeaveLobby(p);
             }
@@ -90,16 +86,16 @@ namespace CTF
             return lobbies;
         }
 
-        private static bool IsPlayerInLobby(Player player)
+        public static Lobby GetPlayerLobby(Player player)
         {
             foreach (var lobby in lobbies)
             {
                 if (lobby.ContainsPlayer(player))
                 {
-                    return true;
+                    return lobby;
                 }
             }
-            return false;
+            return null;
         }
 
         public static void LeaveLobby(Player p)
