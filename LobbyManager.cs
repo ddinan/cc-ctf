@@ -23,6 +23,7 @@ namespace CTF
 
             // Immediately join the new lobby after creating it.
             JoinLobby(p, newLobby.LobbyId);
+            newLobby.StartGame();
 
             nextLobbyId++;
         }
@@ -56,17 +57,6 @@ namespace CTF
             lobby.AddPlayer(p);
 
             lobby.MessagePlayers($"&a+ &b{p.truename} &Sjoined the lobby &5({lobby.Players.Count} players)&S.");
-
-            // If enough players have joined, start the game.
-            if (lobby.Players.Count >= 2)
-            {
-                lobby.StartGame();
-            }
-
-            else
-            {
-                Console.WriteLine("Waiting for more players to join...");
-            }
         }
 
         private static Lobby FindLobbyById(int lobbyId)

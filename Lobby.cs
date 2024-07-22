@@ -56,8 +56,6 @@ namespace CTF
             if (IsGameRunning) return;
 
             ScheduleInitialGameStartCheck();
-
-            MessagePlayers($"Game starting in Lobby {LobbyId} will commence once each team has at least one player.");
         }
 
         private bool initialCheckScheduled = false;
@@ -81,11 +79,16 @@ namespace CTF
                 }
 
                 // Start the game
-                MessagePlayers($"Game started in Lobby {LobbyId}!");
+                MessagePlayers($"&SGame started in Lobby {LobbyId}!");
                 IsGameRunning = true;
                 GameEndTime = DateTime.Now.AddMinutes(GameDurationMinutes);
 
                 Server.MainScheduler.QueueRepeat(GameLoop, null, TimeSpan.FromSeconds(1));
+            }
+
+            else
+            {
+                MessagePlayers($"&SThe game will commence once each team has at least one player.");
             }
         }
 
