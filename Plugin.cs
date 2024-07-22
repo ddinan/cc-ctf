@@ -1,5 +1,4 @@
-﻿using System;
-using MCGalaxy;
+﻿using MCGalaxy;
 
 namespace CTF
 {
@@ -11,10 +10,16 @@ namespace CTF
 
         public override void Load(bool startup)
         {
+            Command.Register(new CmdLobby());
         }
 
         public override void Unload(bool shutdown)
         {
+            Command.Unregister(Command.Find("Lobby"));
+
+            foreach (Lobby lobby in LobbyManager.GetLobbies()) {
+                lobby.EndGame();
+            }
         }
 
         public override void Help(Player p)
