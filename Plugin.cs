@@ -16,6 +16,7 @@ namespace CTF
             Command.Register(new CmdLobby());
 
             OnPlayerFinishConnectingEvent.Register(HandlePlayerFinishConnecting, Priority.Low);
+            OnBlockChangingEvent.Register(TNT.HandleBlockChanging, Priority.Low);
 
             LobbyManager.CreateNewLobby(Player.Console); // Create the default lobby.
         }
@@ -26,6 +27,9 @@ namespace CTF
             Command.Unregister(Command.Find("Lobby"));
 
             OnPlayerFinishConnectingEvent.Unregister(HandlePlayerFinishConnecting);
+            OnBlockChangingEvent.Unregister(TNT.HandleBlockChanging);
+
+            Server.SetMainLevel(Server.Config.MainLevel); // Revert the main level back to what it was before so we can delete the default lobby's level.
 
             List<Lobby> lobbiesCopy = new List<Lobby>(LobbyManager.GetLobbies()); // Create a copy of the lobbies list to avoid enumeration errors.
 

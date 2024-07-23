@@ -63,7 +63,6 @@ namespace CTF
 
         private void HandleCreate(Player p)
         {
-            p.Message("create");
             LobbyManager.CreateNewLobby(p);
         }
 
