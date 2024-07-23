@@ -45,13 +45,13 @@ namespace CTF
                 return;
             }
 
-            if (lobby.BluePlayers.Contains(p) && team.CaselessEq("blue"))
+            if (lobby.BlueTeam.Players.Contains(p) && team.CaselessEq("blue"))
             {
                 p.Message("&cYou are already on this team.");
                 return;
             }
 
-            if (lobby.RedPlayers.Contains(p) && team.CaselessEq("red"))
+            if (lobby.RedTeam.Players.Contains(p) && team.CaselessEq("red"))
             {
                 p.Message("&cYou are already on this team.");
                 return;
@@ -59,48 +59,48 @@ namespace CTF
 
             if (team.CaselessEq("blue"))
             {
-                if (lobby.BluePlayers.Contains(p))
+                if (lobby.BlueTeam.Players.Contains(p))
                 {
                     p.Message("&cYou are already on this team.");
                     return;
                 }
 
-                if (lobby.RedPlayers.Contains(p))
+                if (lobby.RedTeam.Players.Contains(p))
                 {
-                    lobby.RedPlayers.Remove(p);
+                    lobby.RedTeam.Players.Remove(p);
                 }
 
-                lobby.BluePlayers.Add(p);
+                lobby.BlueTeam.Players.Add(p);
                 lobby.MessagePlayers($"&b{p.truename} &Sjoined the &9blue &Steam.");
             }
 
             else if (team.CaselessEq("red"))
             {
-                if (lobby.RedPlayers.Contains(p))
+                if (lobby.RedTeam.Players.Contains(p))
                 {
                     p.Message("&cYou are already on this team.");
                     return;
                 }
 
-                if (lobby.BluePlayers.Contains(p))
+                if (lobby.BlueTeam.Players.Contains(p))
                 {
-                    lobby.BluePlayers.Remove(p);
+                    lobby.BlueTeam.Players.Remove(p);
                 }
 
-                lobby.RedPlayers.Add(p);
+                lobby.RedTeam.Players.Add(p);
                 lobby.MessagePlayers($"&b{p.truename} &Sjoined the &cred &Steam.");
             }
 
             else
             {
-                if (lobby.BluePlayers.Contains(p))
+                if (lobby.BlueTeam.Players.Contains(p))
                 {
-                    lobby.BluePlayers.Remove(p);
+                    lobby.BlueTeam.Players.Remove(p);
                 }
 
-                if (lobby.RedPlayers.Contains(p))
+                if (lobby.RedTeam.Players.Contains(p))
                 {
-                    lobby.RedPlayers.Remove(p);
+                    lobby.RedTeam.Players.Remove(p);
                 }
 
                 lobby.MessagePlayers($"&b{p.truename} &Sjoined the &7spectator &Steam.");

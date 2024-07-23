@@ -13,8 +13,8 @@ namespace CTF
         public int GameDurationMinutes { get; private set; }
         public DateTime GameEndTime { get; private set; }
 
-        public List<Player> BluePlayers = new List<Player>();
-        public List<Player> RedPlayers = new List<Player>();
+        public Team BlueTeam { get; private set; }
+        public Team RedTeam { get; private set; }
 
         public SchedulerTask Task;
         public Level Map = null;
@@ -28,6 +28,9 @@ namespace CTF
             Players = new List<Player>();
             IsGameRunning = false;
             GameDurationMinutes = gameDurationMinutes;
+
+            BlueTeam = new Team("Blue");
+            RedTeam = new Team("Red");
 
             List<string> availableMaps = new List<string> { "map1", "map2", "map3", "map4" };
             mapVoting = new MapVoting(this, availableMaps);
@@ -104,7 +107,7 @@ namespace CTF
         private void CheckTeamsAndStartGame(SchedulerTask task)
         {
             // Check if there is at least one player on each team.
-            if (BluePlayers.Count > 0 && RedPlayers.Count > 0)
+            if (BlueTeam.Players.Count > 0 && RedTeam.Players.Count > 0)
             {
                 // Ensure the initial check task is canceled once conditions are met.
                 if (initialCheckScheduled)
@@ -153,15 +156,15 @@ namespace CTF
             IsGameRunning = false;
             GameEndTime = DateTime.MinValue;
 
-            if (BluePlayers.Count > 0)
+            if (BlueTeam.Players.Count > 0)
             {
-                BluePlayers.Clear();
+                BlueTeam.Players.Clear();
             }
 
 
-            if (RedPlayers.Count > 0)
+            if (RedTeam.Players.Count > 0)
             {
-                RedPlayers.Clear();
+                RedTeam.Players.Clear();
             }
 
             // Perform end of game tasks like displaying scores, cleanup, etc.

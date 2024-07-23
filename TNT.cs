@@ -18,7 +18,7 @@ namespace CTF
                 return;
             }
 
-            if (!lobby.BluePlayers.Contains(p) && !lobby.RedPlayers.Contains(p))
+            if (!lobby.BlueTeam.Players.Contains(p) && !lobby.RedTeam.Players.Contains(p))
             {
                 p.Message("&cYou need to be in a team to modify blocks.");
                 cancel = true;
@@ -86,9 +86,9 @@ namespace CTF
                 if (pl == p) continue;
 
                 // Do not kill if the target is a spectator or they are on the same team as the player.
-                if (lobby.BluePlayers.Contains(pl) && lobby.BluePlayers.Contains(p)) continue;
-                if (lobby.RedPlayers.Contains(pl) && lobby.RedPlayers.Contains(p)) continue;
-                if (!lobby.BluePlayers.Contains(pl) && !lobby.RedPlayers.Contains(pl)) continue;
+                if (lobby.BlueTeam.Players.Contains(pl) && lobby.BlueTeam.Players.Contains(p)) continue;
+                if (lobby.RedTeam.Players.Contains(pl) && lobby.RedTeam.Players.Contains(p)) continue;
+                if (!lobby.BlueTeam.Players.Contains(pl) && !lobby.RedTeam.Players.Contains(pl)) continue;
 
                 int dx = pl.Pos.BlockX - x, dy = pl.Pos.FeetBlockCoords.Y - y, dz = pl.Pos.BlockZ - z;
 
