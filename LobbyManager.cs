@@ -18,6 +18,7 @@ namespace CTF
             if (!LevelActions.Copy(p, "map1", map)) return;
             LevelActions.Load(p, map, false);
             newLobby.Map = LevelInfo.FindExact(map); // Set the lobby's active map.
+            newLobby.UpdateMapConfig(newLobby.Map);
 
             p.Message($"&SNew lobby created with ID &b{newLobby.LobbyId}&7.");
 

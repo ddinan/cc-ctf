@@ -105,6 +105,8 @@ namespace CTF
 
                 lobby.MessagePlayers($"&b{p.truename} &Sjoined the &7spectator &Steam.");
             }
+
+            lobby.RespawnPlayer(p); // Spawn the player at their new team's spawn point.
         }
 
         public override void Help(Player p)

@@ -8,11 +8,6 @@ namespace CTF
         public string Name { get; private set; }
         public List<Player> Players { get; private set; }
 
-        public int FlagCaptures = 0;
-
-        public Position FlagPosition;
-        public Position SpawnPosition;
-
         public Team(string name)
         {
             Name = name;

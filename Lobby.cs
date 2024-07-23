@@ -1,4 +1,8 @@
 ﻿using MCGalaxy;
+using MCGalaxy.Commands;
+using MCGalaxy.Commands.World;
+using MCGalaxy.Maths;
+using MCGalaxy.Modules.Games.CTF;
 using MCGalaxy.Tasks;
 using System;
 using System.Collections.Generic;
@@ -20,6 +24,8 @@ namespace CTF
         public Level Map = null;
 
         private MapVoting mapVoting;
+
+        public MapConfig config = new MapConfig();
 
         public Lobby(int lobbyId, int gameDurationMinutes = 1)
         {
@@ -74,11 +80,11 @@ namespace CTF
             LevelActions.Load(Player.Console, map, false);
             Level newLevel = LevelInfo.FindExact(map);
 
-            // Send players in the lobby to the new map.
+            UpdateMapConfig(newLevel); // Reposition things such as flag and spawn positions.
 
             foreach (Player p in Players)
             {
-                PlayerActions.ChangeMap(p, newLevel);
+                PlayerActions.ChangeMap(p, newLevel); // Send players in the lobby to the new map.
             }
 
             if (Map != null)
@@ -184,6 +190,50 @@ namespace CTF
             if (Map == null) return;
 
             Map.Message(message);
+        }
+
+        public void UpdateMapConfig(Level lvl)
+        {
+            MapConfig config = new MapConfig();
+            config.SetDefaults(lvl);
+            config.Load(lvl.name.Replace($"lobby{LobbyId}_", ""));
+            this.config = config;
+        }
+
+        public void RespawnPlayer(Player p)
+        {
+            Position pos;
+            Vec3U16 spawn = new Vec3U16(p.level.spawnx, p.level.spawny, p.level.spawnz);
+
+            int yaw = p.level.rotx;
+            int pitch = p.level.roty;
+
+            if (BlueTeam.Players.Contains(p))
+            {
+                spawn = config.BlueSpawnPosition;
+                yaw = config.BlueSpawnYaw;
+                pitch = config.BlueSpawnPitch;
+            }
+
+            else if (RedTeam.Players.Contains(p))
+            {
+                spawn = config.RedSpawnPosition;
+                yaw = config.RedSpawnYaw;
+                pitch = config.RedSpawnPitch;
+
+                p.Message("on red");
+            }
+
+            pos.X = 16 + spawn.X * 32;
+            pos.Y = 32 + spawn.Y * 32;
+            pos.Z = 16 + spawn.Z * 32;
+
+            if (!CommandParser.GetInt(Player.Console, yaw.ToString(), "Yaw angle", ref yaw, -360, 360)) return;
+            if (!CommandParser.GetInt(Player.Console, pitch.ToString(), "Pitch angle", ref yaw, -360, 360)) return;
+            yaw = Orientation.DegreesToPacked(yaw);
+            pitch = Orientation.DegreesToPacked(pitch);
+
+            PlayerActions.RespawnAt(p, pos, (byte)yaw, (byte)pitch);
         }
     }
 }

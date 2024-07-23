@@ -95,7 +95,8 @@ namespace CTF
                 // If the target player is in range of the TNT.
                 if ((dx * dx) + (dy * dy) + (dz * dz) <= radius * radius)
                 {
-                    pl.HandleDeath(Block.Cobblestone, $"{pl.truename} %Swas exploded by {p.truename}.");
+                    lobby.MessagePlayers($"{pl.truename} %Swas exploded by {p.truename}.");
+                    lobby.RespawnPlayer(pl);
                 }
             }
         }
