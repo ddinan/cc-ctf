@@ -1,6 +1,5 @@
 ﻿using MCGalaxy;
 using MCGalaxy.Network;
-using System.Reflection.Emit;
 using BlockID = System.UInt16;
 
 namespace CTF
@@ -31,7 +30,6 @@ namespace CTF
             {
                 if (p.Extras.GetBoolean("CTF_HAS_TNT"))
                 {
-                    p.Message("explode");
                     p.Extras["CTF_HAS_TNT"] = false;
                     string[] coords = p.Extras.GetString("CTF_TNT_COORDS").Split(';');
 
@@ -40,7 +38,8 @@ namespace CTF
                     ushort oldY = ushort.Parse(coords[1]);
                     ushort oldZ = ushort.Parse(coords[2]);
 
-                    DoExplode(p, oldX, oldY, oldZ);
+                    ModifyMap(p, oldX, oldY, oldZ);
+                    KillPlayers(p, oldX, oldY, oldZ, lobby);
                     p.level.UpdateBlock(p, oldX, oldY, oldZ, Block.Air);
 
                     // Revert the current TNT.
@@ -49,14 +48,13 @@ namespace CTF
                 }
                 else
                 {
-                    p.Message("awaiting another tnt");
                     p.Extras["CTF_HAS_TNT"] = true;
                     p.Extras["CTF_TNT_COORDS"] = $"{x};{y};{z}";
                 }
             }
         }
 
-        private static void DoExplode(Player p, ushort x, ushort y, ushort z, int radius = 2)
+        private static void ModifyMap(Player p, ushort x, ushort y, ushort z, int radius = 2)
         {
             BufferedBlockSender buffer = new BufferedBlockSender(p.level);
 
@@ -68,7 +66,7 @@ namespace CTF
                     {
                         BlockID block = p.level.GetBlock(x, y, z);
 
-                        if (p.level.Props[block].OPBlock) continue; // Don't explode OP blocks
+                        if (p.level.Props[block].OPBlock || block == Block.Bedrock) continue; // Don't explode OP blocks
                         if (block == Block.Invalid) continue;
 
                         p.level.SetBlock((ushort)dx, (ushort)dy, (ushort)dz, Block.Air);
@@ -79,6 +77,27 @@ namespace CTF
             }
 
             buffer.Flush();
+        }
+
+        private static void KillPlayers(Player p, ushort x, ushort y, ushort z, Lobby lobby, int radius = 2)
+        {
+            foreach (Player pl in lobby.Players)
+            {
+                if (pl == p) continue;
+
+                // Do not kill if the target is a spectator or they are on the same team as the player.
+                if (lobby.BluePlayers.Contains(pl) && lobby.BluePlayers.Contains(p)) continue;
+                if (lobby.RedPlayers.Contains(pl) && lobby.RedPlayers.Contains(p)) continue;
+                if (!lobby.BluePlayers.Contains(pl) && !lobby.RedPlayers.Contains(pl)) continue;
+
+                int dx = pl.Pos.BlockX - x, dy = pl.Pos.FeetBlockCoords.Y - y, dz = pl.Pos.BlockZ - z;
+
+                // If the target player is in range of the TNT.
+                if ((dx * dx) + (dy * dy) + (dz * dz) <= radius * radius)
+                {
+                    pl.HandleDeath(Block.Cobblestone, $"{pl.truename} %Swas exploded by {p.truename}.");
+                }
+            }
         }
     }
 }
