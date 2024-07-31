@@ -1,8 +1,6 @@
 ﻿using MCGalaxy;
 using MCGalaxy.Commands;
-using MCGalaxy.Commands.World;
 using MCGalaxy.Maths;
-using MCGalaxy.Modules.Games.CTF;
 using MCGalaxy.Tasks;
 using System;
 using System.Collections.Generic;
@@ -143,7 +141,13 @@ namespace CTF
             TimeSpan timeLeft = GameEndTime - DateTime.Now;
 
             if (timeLeft.TotalSeconds <= 0)
-            {
+            { // Time ran out.
+                EndGame();
+                return;
+            }
+
+            if (BlueTeam.Captures == 5 || RedTeam.Captures == 5)
+            { // Either team achieved max captures.
                 EndGame();
                 return;
             }
@@ -198,6 +202,26 @@ namespace CTF
             config.SetDefaults(lvl);
             config.Load(lvl.name.Replace($"lobby{LobbyId}_", ""));
             this.config = config;
+
+            SpawnFlags(lvl);
+        }
+
+        private void SpawnFlags(Level lvl)
+        {
+            Position blueFlagPosition = new Position(16 + config.BlueFlagPosition.X * 32, 48 + config.BlueFlagPosition.Y * 32, 16 + config.BlueFlagPosition.Z * 32);
+            SpawnFlag(lvl, blueFlagPosition, "blue_flag");
+
+            Position redFlagPosition = new Position(16 + config.RedFlagPosition.X * 32, 48 + config.RedFlagPosition.Y * 32, 16 + config.RedFlagPosition.Z * 32);
+            SpawnFlag(lvl, redFlagPosition, "red_flag");
+        }
+
+        public void SpawnFlag(Level lvl, Position position, string name)
+        {
+            PlayerBot bot = new PlayerBot(name, lvl);
+            bot.SetInitialPos(position);
+            bot.SetYawPitch(0, 0);
+            bot.UpdateModel("sheep");
+            PlayerBot.Add(bot);
         }
 
         public void RespawnPlayer(Player p)
@@ -220,8 +244,6 @@ namespace CTF
                 spawn = config.RedSpawnPosition;
                 yaw = config.RedSpawnYaw;
                 pitch = config.RedSpawnPitch;
-
-                p.Message("on red");
             }
 
             pos.X = 16 + spawn.X * 32;
@@ -233,7 +255,52 @@ namespace CTF
             yaw = Orientation.DegreesToPacked(yaw);
             pitch = Orientation.DegreesToPacked(pitch);
 
+            Position oldPos = p.Pos;
+
             PlayerActions.RespawnAt(p, pos, (byte)yaw, (byte)pitch);
+
+            // If the player is holding a flag, spawn it at their death location.
+            // TODO: Why does the player turn into the flag when respawning?
+            if (p.Extras.GetBoolean("CTF_HAS_FLAG"))
+            {
+                string team = BlueTeam.ContainsPlayer(p) ? "red" : "blue";
+                SpawnFlag(p.level, oldPos, $"{team}_flag");
+                p.Extras["CTF_HAS_FLAG"] = false;
+            }
+        }
+
+        public void ClickOnFlag(Player p, PlayerBot flag)
+        {
+            Team team = BlueTeam.Players.Contains(p) ? RedTeam : BlueTeam;
+
+            MessagePlayers($"&S{p.truename} picked up the {team.Name} flag!");
+            p.Extras["CTF_HAS_FLAG"] = true;
+
+            PlayerBot.Remove(flag);
+        }
+
+        public void CaptureFlag(Player p)
+        {
+            Team team = BlueTeam.Players.Contains(p) ? RedTeam : BlueTeam;
+
+            MessagePlayers($"&S{p.truename} captured the {team.Name} flag!");
+            p.Extras["CTF_HAS_FLAG"] = false;
+
+            if (team == BlueTeam)
+            {
+                Position blueFlagPosition = new Position(16 + config.BlueFlagPosition.X * 32, 48 + config.BlueFlagPosition.Y * 32, 16 + config.BlueFlagPosition.Z * 32);
+                SpawnFlag(p.level, blueFlagPosition, "blue_flag");
+
+                BlueTeam.SetCaptures(BlueTeam.Captures + 1);
+            }
+
+            else if (team == RedTeam)
+            {
+                Position redFlagPosition = new Position(16 + config.RedFlagPosition.X * 32, 48 + config.RedFlagPosition.Y * 32, 16 + config.RedFlagPosition.Z * 32);
+                SpawnFlag(p.level, redFlagPosition, "red_flag");
+
+                RedTeam.SetCaptures(RedTeam.Captures + 1);
+            }
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using MCGalaxy;
 using MCGalaxy.Config;
 using MCGalaxy.Maths;
-using System;
 
 namespace CTF
 {
