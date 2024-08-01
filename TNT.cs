@@ -59,10 +59,11 @@ namespace CTF
                     ushort oldY = ushort.Parse(coords[1]);
                     ushort oldZ = ushort.Parse(coords[2]);
 
-                    ModifyMap(p, oldX, oldY, oldZ);
+                    ModifyMap(p, lobby, oldX, oldY, oldZ);
                     KillPlayers(p, oldX, oldY, oldZ, lobby);
                     p.level.UpdateBlock(p, oldX, oldY, oldZ, Block.Air);
 
+                    
                     // Revert the current TNT.
                     cancel = true;
                     p.RevertBlock(x, y, z);
@@ -78,7 +79,7 @@ namespace CTF
             }
         }
 
-        private static void ModifyMap(Player p, ushort x, ushort y, ushort z, int radius = 2)
+        private static void ModifyMap(Player p, Lobby lobby, ushort x, ushort y, ushort z, int radius = 2)
         {
             BufferedBlockSender buffer = new BufferedBlockSender(p.level);
 
@@ -90,8 +91,15 @@ namespace CTF
                     {
                         BlockID block = p.level.GetBlock(x, y, z);
 
-                        if (p.level.Props[block].OPBlock || block == Block.Bedrock) continue; // Don't explode OP blocks
+                        if (p.level.Props[block].OPBlock || block == Block.Bedrock) continue; // Don't explode OP blocks.
                         if (block == Block.Invalid) continue;
+
+                        Mine mine = Mines.GetMineAtPosition(lobby, (ushort)dx, (ushort)dy, (ushort)dz);
+                        if (mine != null)
+                        {
+                            if (mine.Owner == p) continue;
+                            Mines.RemoveMine(p, mine, lobby);
+                        }
 
                         p.level.SetBlock((ushort)dx, (ushort)dy, (ushort)dz, Block.Air);
                         int index = p.level.PosToInt((ushort)dx, (ushort)dy, (ushort)dz);

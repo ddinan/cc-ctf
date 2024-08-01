@@ -1,5 +1,6 @@
 ﻿using MCGalaxy;
 using System;
+using System.Collections.Generic;
 
 namespace CTF
 {
@@ -27,29 +28,53 @@ namespace CTF
             Lobby lobby = LobbyManager.GetPlayerLobby(p);
             if (lobby == null) return;
 
-            Mine mine = null;
+            if (!lobby.BlueTeam.Players.Contains(p) && !lobby.RedTeam.Players.Contains(p)) return;
 
-            foreach (Mine m in lobby.mines)
+            List<Mine> mines = new List<Mine>();
+
+            foreach (Mine mine in lobby.mines)
             {
-                if (!lobby.BlueTeam.Players.Contains(p) && !lobby.RedTeam.Players.Contains(p)) continue;
-                if (!m.IsActive) continue;
-                if (m.Owner == p) continue;
+                if (!mine.IsActive) continue;
+                if (mine.Owner == p) continue;
 
-                if (Math.Abs(x - m.Location.X) <= 2 &&
-                    Math.Abs(y - m.Location.Y) <= 2 &&
-                    Math.Abs(z - m.Location.Z) <= 2)
+                if (Math.Abs(x - mine.Location.X) <= 2 &&
+                    Math.Abs(y - mine.Location.Y) <= 2 &&
+                    Math.Abs(z - mine.Location.Z) <= 2)
                 {
-                    mine = m;
+                    mines.Add(mine);
                 }
             }
 
-            if (mine == null) return;
+            if (mines.Count > 0)
+            {
+                lobby.RespawnPlayer(p);
+            }
 
-            p.Message($"There was a mine at {mine.Location.X} {mine.Location.Y} {mine.Location.Z}");
-            p.level.UpdateBlock(p, (ushort)mine.Location.X, (ushort)mine.Location.Y, (ushort)mine.Location.Z, Block.Air);
-            //Command.Find("Effect").Use(p, "explosion " + mine.Location.X + " " + mine.Location.Y + " " + mine.Location.Z + " 0 0 0 true");
+            foreach (Mine mine in mines)
+            {
+                p.Message($"There was a mine at {mine.Location.X} {mine.Location.Y} {mine.Location.Z}.");
+                RemoveMine(p, mine, lobby);
+            }
+        }
+
+        public static void RemoveMine(Player p, Mine mine, Lobby lobby)
+        {
+            lobby.Map.UpdateBlock(p, (ushort)mine.Location.X, (ushort)mine.Location.Y, (ushort)mine.Location.Z, Block.Air);
+            p.Message($"Removed a mine at {mine.Location.X} {mine.Location.Y} {mine.Location.Z}.");
             lobby.mines.Remove(mine);
-            lobby.RespawnPlayer(p);
+        }
+
+        public static Mine GetMineAtPosition(Lobby lobby, ushort x, ushort y, ushort z)
+        {
+            foreach (Mine mine in lobby.mines)
+            {
+                if (mine.Location.X == x && mine.Location.Y == y && mine.Location.Z == z)
+                {
+                    return mine;
+                }
+            }
+
+            return null;
         }
     }
 }
