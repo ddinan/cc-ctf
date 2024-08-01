@@ -19,6 +19,7 @@ namespace CTF
             OnBlockChangingEvent.Register(TNT.HandleBlockChanging, Priority.Low);
             OnPlayerClickEvent.Register(HandlePlayerClick, Priority.Low);
             OnPlayerFinishConnectingEvent.Register(HandlePlayerFinishConnecting, Priority.Low);
+            OnPlayerMoveEvent.Register(Mines.HandlePlayerMove, Priority.Low);
             
 
             LobbyManager.CreateNewLobby(Player.Console); // Create the default lobby.
@@ -32,6 +33,7 @@ namespace CTF
             OnBlockChangingEvent.Unregister(TNT.HandleBlockChanging);
             OnPlayerClickEvent.Unregister(HandlePlayerClick);
             OnPlayerFinishConnectingEvent.Unregister(HandlePlayerFinishConnecting);
+            OnPlayerMoveEvent.Unregister(Mines.HandlePlayerMove);
 
             Server.SetMainLevel(Server.Config.MainLevel); // Revert the main level back to what it was before so we can delete the default lobby's level.
 

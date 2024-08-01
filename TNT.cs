@@ -1,11 +1,13 @@
 ﻿using MCGalaxy;
 using MCGalaxy.Network;
+using System.Threading.Tasks;
 using BlockID = System.UInt16;
 
 namespace CTF
 {
     public class TNT
     {
+        // TODO: Move HandleBlockChanging out of TNT class.
         public static void HandleBlockChanging(Player p, ushort x, ushort y, ushort z, BlockID block, bool placing, ref bool cancel)
         {
             Lobby lobby = LobbyManager.GetPlayerLobby(p);
@@ -23,6 +25,25 @@ namespace CTF
                 p.Message("&cYou need to be in a team to modify blocks.");
                 cancel = true;
                 p.RevertBlock(x, y, z);
+                return;
+            }
+
+            if (placing && block == Block.Gray)
+            {
+                Position position = new Position(x, y, z);
+                Mine mine = new Mine(p, position);
+                lobby.mines.Add(mine);
+
+                p.Message($"&SAdded a mine at {mine.Location.X} {mine.Location.Y} {mine.Location.Z}.");
+
+                // Wait for 3 seconds before activating the mine.
+                Task.Run(async () =>
+                {
+                    await Task.Delay(3000);
+                    mine.IsActive = true;
+                    p.Message("&SMine is now active!");
+                });
+
                 return;
             }
 
@@ -46,11 +67,14 @@ namespace CTF
                     cancel = true;
                     p.RevertBlock(x, y, z);
                 }
+
                 else
                 {
                     p.Extras["CTF_HAS_TNT"] = true;
                     p.Extras["CTF_TNT_COORDS"] = $"{x};{y};{z}";
                 }
+
+                return;
             }
         }
 

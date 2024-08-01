@@ -177,7 +177,8 @@ namespace CTF
                 RedTeam.Players.Clear();
             }
 
-            // Perform end of game tasks like displaying scores, cleanup, etc.
+            mines.Clear();
+
             Server.MainScheduler.Cancel(Task);
 
             if (shutdown)
@@ -302,5 +303,7 @@ namespace CTF
                 RedTeam.SetCaptures(RedTeam.Captures + 1);
             }
         }
+
+        public List<Mine> mines = new List<Mine>();
     }
 }
