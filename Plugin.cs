@@ -13,6 +13,7 @@ namespace CTF
 
         public override void Load(bool startup)
         {
+            Command.Register(new CmdClass());
             Command.Register(new CmdJoinTeam());
             Command.Register(new CmdLobby());
 
@@ -27,6 +28,7 @@ namespace CTF
 
         public override void Unload(bool shutdown)
         {
+            Command.Unregister(Command.Find("Class"));
             Command.Unregister(Command.Find("JoinTeam"));
             Command.Unregister(Command.Find("Lobby"));
 
