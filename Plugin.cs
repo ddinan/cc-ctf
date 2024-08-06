@@ -86,6 +86,8 @@ namespace CTF
             if (heldBlock == Block.Lime)
             {
                 p.Message("rocket");
+                Rocket rocket = new Rocket();
+                rocket.LaunchRocket(p, yaw, pitch);
                 return;
             }
 

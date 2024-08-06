@@ -8,67 +8,67 @@ using BlockID = System.UInt16;
 
 namespace CTF.Items
 {
-    public class Grenade
+    public class Rocket
     {
-        readonly Dictionary<Player, GrenadeData> activeGrenades = new Dictionary<Player, GrenadeData>();
+        readonly Dictionary<Player, RocketData> activeRockets = new Dictionary<Player, RocketData>();
 
-        public void ThrowGrenade(Player p, ushort yaw, ushort pitch)
+        public void LaunchRocket(Player p, ushort yaw, ushort pitch)
         {
             Vec3F32 dir = DirUtils.GetDirVectorExt(yaw, pitch);
 
-            GrenadeData data = MakeArgs(p, dir);
-            activeGrenades[p] = data;
+            RocketData data = MakeArgs(p, dir);
+            activeRockets[p] = data;
 
-            SchedulerTask task = new SchedulerTask(GrenadeCallback, data, TimeSpan.FromMilliseconds(85), true);
+            SchedulerTask task = new SchedulerTask(RocketCallback, data, TimeSpan.FromMilliseconds(65), true);
             p.CriticalTasks.Add(task);
         }
 
-        GrenadeData MakeArgs(Player p, Vec3F32 dir)
+        RocketData MakeArgs(Player p, Vec3F32 dir)
         {
-            GrenadeData args = new GrenadeData();
-            args.block = Block.Red;
+            RocketData args = new RocketData();
+            args.block = Block.Lime;
 
             args.drag = new Vec3F32(0.99f, 0.99f, 0.99f);
-            args.gravity = 0.1f;
+            args.gravity = 0.00f;
+            args.thrust = new Vec3F32(dir.X * 0.5f, dir.Y * 0.5f, dir.Z * 0.5f);
 
             args.pos = p.Pos.BlockCoords;
             args.last = Round(args.pos);
             args.next = Round(args.pos);
 
-            args.vel = new Vec3F32(dir.X * 0.95f, dir.Y * 0.95f, dir.Z * 0.95f);
+            args.vel = new Vec3F32(dir.X * 1.5f, dir.Y * 1.5f, dir.Z * 1.5f);
             args.player = p;
             return args;
         }
 
-        void RevertLast(Player p, GrenadeData data)
+        void RevertLast(Player p, RocketData data)
         {
             p.level.BroadcastRevert(data.last.X, data.last.Y, data.last.Z);
         }
 
-        void UpdateNext(Player p, GrenadeData data)
+        void UpdateNext(Player p, RocketData data)
         {
             p.level.BroadcastChange(data.next.X, data.next.Y, data.next.Z, data.block);
         }
 
-        void OnHitBlock(GrenadeData data, Vec3U16 pos, BlockID block)
+        void OnHitBlock(RocketData data, Vec3U16 pos, BlockID block)
         {
             data.player.Message("hit a block");
         }
 
-        void OnHitPlayer(GrenadeData args, Player pl)
+        void OnHitPlayer(RocketData args, Player pl)
         {
             pl.HandleDeath(Block.Cobblestone, "@p &Swas shot");
         }
 
-        void GrenadeCallback(SchedulerTask task)
+        void RocketCallback(SchedulerTask task)
         {
-            GrenadeData data = (GrenadeData)task.State;
-            if (TickGrenade(data)) return;
+            RocketData data = (RocketData)task.State;
+            if (TickRocket(data)) return;
 
-            // Done
             RevertLast(data.player, data);
             task.Repeating = false;
-            activeGrenades.Remove(data.player);
+            activeRockets.Remove(data.player);
         }
 
         static Vec3U16 Round(Vec3F32 v)
@@ -76,7 +76,7 @@ namespace CTF.Items
             unchecked { return new Vec3U16((ushort)Math.Round(v.X), (ushort)Math.Round(v.Y), (ushort)Math.Round(v.Z)); }
         }
 
-        bool TickGrenade(GrenadeData data)
+        bool TickRocket(RocketData data)
         {
             Player p = data.player;
             Vec3U16 pos = data.next;
@@ -90,6 +90,7 @@ namespace CTF.Items
 
             // Apply physics.
             data.pos += data.vel;
+            data.vel += data.thrust;
             data.vel.X *= data.drag.X; data.vel.Y *= data.drag.Y; data.vel.Z *= data.drag.Z;
             data.vel.Y -= data.gravity;
 
@@ -123,11 +124,11 @@ namespace CTF.Items
         }
     }
 
-    public class GrenadeData
+    public class RocketData
     {
         public Player player;
         public BlockID block;
-        public Vec3F32 pos, vel;
+        public Vec3F32 pos, vel, thrust;
         public Vec3U16 last, next;
         public Vec3F32 drag;
         public float gravity;
