@@ -1,7 +1,10 @@
-﻿using MCGalaxy;
+﻿using CTF.Items;
+using MCGalaxy;
 using MCGalaxy.Events.PlayerEvents;
 using MCGalaxy.Maths;
 using System.Collections.Generic;
+
+using BlockID = System.UInt16;
 
 namespace CTF
 {
@@ -55,6 +58,42 @@ namespace CTF
         {
             if (action != MouseAction.Pressed) return;
             if (entity != Entities.SelfID && ClickOnBot(p, entity)) return;
+
+            BlockID heldBlock = p.GetHeldBlock();
+
+            // Weapons testing.
+
+            if (heldBlock == Block.Red)
+            {
+                p.Message("grenade");
+                Grenade grenade = new Grenade();
+                grenade.ThrowGrenade(p, yaw, pitch);
+                return;
+            }
+
+            if (heldBlock == Block.Orange)
+            {
+                p.Message("flamethrower");
+                return;
+            }
+
+            if (heldBlock == Block.Yellow)
+            {
+                p.Message("line");
+                return;
+            }
+
+            if (heldBlock == Block.Lime)
+            {
+                p.Message("rocket");
+                return;
+            }
+
+            if (heldBlock == Block.Green)
+            {
+                p.Message("shield");
+                return;
+            }
         }
 
         private bool ClickOnBot(Player p, byte entity)
