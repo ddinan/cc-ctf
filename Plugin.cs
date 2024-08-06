@@ -73,8 +73,20 @@ namespace CTF
 
             if (heldBlock == Block.Orange)
             {
-                p.Message("flamethrower");
-                return;
+                if (p.Extras.GetBoolean("CTF_FLAMETHROWER_ACTIVATED"))
+                {
+                    p.Message("flamethrower off");
+                    p.Extras["CTF_FLAMETHROWER_ACTIVATED"] = false;
+                    return;
+                }
+
+                else
+                {
+                    p.Message("flamethrower on");
+                    Flamethrower flamethrower = new Flamethrower();
+                    flamethrower.ActivateFlamethrower(p, yaw, pitch);
+                    return;
+                }
             }
 
             if (heldBlock == Block.Yellow)
