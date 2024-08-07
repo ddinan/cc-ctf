@@ -1,4 +1,5 @@
-﻿using MCGalaxy;
+﻿using CTF.Items;
+using MCGalaxy;
 using MCGalaxy.Commands;
 using MCGalaxy.Maths;
 using MCGalaxy.Tasks;

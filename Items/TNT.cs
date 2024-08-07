@@ -3,7 +3,7 @@ using MCGalaxy.Network;
 using System.Threading.Tasks;
 using BlockID = System.UInt16;
 
-namespace CTF
+namespace CTF.Items
 {
     public class TNT
     {
@@ -63,7 +63,7 @@ namespace CTF
                     KillPlayers(p, oldX, oldY, oldZ, lobby);
                     p.level.UpdateBlock(p, oldX, oldY, oldZ, Block.Air);
 
-                    
+
                     // Revert the current TNT.
                     cancel = true;
                     p.RevertBlock(x, y, z);
@@ -125,7 +125,7 @@ namespace CTF
                 int dx = pl.Pos.BlockX - x, dy = pl.Pos.FeetBlockCoords.Y - y, dz = pl.Pos.BlockZ - z;
 
                 // If the target player is in range of the TNT.
-                if ((dx * dx) + (dy * dy) + (dz * dz) <= radius * radius)
+                if (dx * dx + dy * dy + dz * dz <= radius * radius)
                 {
                     lobby.MessagePlayers($"{pl.truename} %Swas exploded by {p.truename}.");
                     lobby.RespawnPlayer(pl);
