@@ -49,7 +49,7 @@ namespace CTF.Items
             {
                 if (!data.flamePositions.Contains(pos))
                 {
-                    p.level.BroadcastRevert(pos.X, pos.Y, pos.Z);
+                    p.level.UpdateBlock(p, pos.X, pos.Y, pos.Z, Block.Air);
                 }
             }
 
@@ -57,7 +57,7 @@ namespace CTF.Items
             {
                 foreach (Vec3U16 pos in data.flamePositions)
                 {
-                    p.level.BroadcastRevert(pos.X, pos.Y, pos.Z);
+                    p.level.UpdateBlock(p, pos.X, pos.Y, pos.Z, Block.Air);
                 }
             }
         }
@@ -74,7 +74,7 @@ namespace CTF.Items
                 BlockID cur = p.level.GetBlock(pos.X, pos.Y, pos.Z);
 
                 // Stop if we hit a non-air block.
-                if (cur != Block.Air)
+                if (cur != Block.Air && cur != Block.Lava)
                 {
                     StopFlamethrower(data);
                     return;
@@ -92,7 +92,7 @@ namespace CTF.Items
                 data.flamePositions.Add(pos);
                 if (!data.previousFlamePositions.Contains(pos))
                 {
-                    p.level.BroadcastChange(pos.X, pos.Y, pos.Z, data.block);
+                    p.level.UpdateBlock(p, pos.X, pos.Y, pos.Z, data.block);
                 }
             }
         }
