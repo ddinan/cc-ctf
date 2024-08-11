@@ -59,13 +59,13 @@ namespace CTF
             if (action != MouseAction.Pressed) return;
             if (entity != Entities.SelfID && ClickOnBot(p, entity)) return;
 
-            BlockID heldBlock = p.GetHeldBlock();
+            BlockID heldBlock = player.GetHeldBlock();
 
             // Weapons testing.
 
             if (heldBlock == Block.Red)
             {
-                p.Message("grenade");
+                player.Message("grenade");
                 Grenade grenade = new Grenade();
                 grenade.ThrowGrenade(p, yaw, pitch);
                 return;
@@ -73,16 +73,16 @@ namespace CTF
 
             if (heldBlock == Block.Orange)
             {
-                if (p.Extras.GetBoolean("CTF_FLAMETHROWER_ACTIVATED"))
+                if (player.Extras.GetBoolean("CTF_FLAMETHROWER_ACTIVATED"))
                 {
-                    p.Message("flamethrower off");
-                    p.Extras["CTF_FLAMETHROWER_ACTIVATED"] = false;
+                    player.Message("flamethrower off");
+                    player.Extras["CTF_FLAMETHROWER_ACTIVATED"] = false;
                     return;
                 }
 
                 else
                 {
-                    p.Message("flamethrower on");
+                    player.Message("flamethrower on");
                     Flamethrower flamethrower = new Flamethrower();
                     flamethrower.ActivateFlamethrower(p, yaw, pitch);
                     return;
@@ -91,14 +91,14 @@ namespace CTF
 
             if (heldBlock == Block.Yellow)
             {
-                p.Message("bridge");
+                player.Message("bridge");
                 Bridge.BuildBridge(p, yaw, pitch);
                 return;
             }
 
             if (heldBlock == Block.Lime)
             {
-                p.Message("rocket");
+                player.Message("rocket");
                 Rocket rocket = new Rocket();
                 rocket.LaunchRocket(p, yaw, pitch);
                 return;
@@ -106,7 +106,7 @@ namespace CTF
 
             if (heldBlock == Block.Green)
             {
-                p.Message("shield");
+                player.Message("shield");
                 return;
             }
         }
@@ -118,13 +118,13 @@ namespace CTF
 
             if (!lobby.BlueTeam.Players.Contains(p) && !lobby.RedTeam.Players.Contains(p)) return false;
 
-            PlayerBot[] bots = p.level.Bots.Items;
+            PlayerBot[] bots = player.level.Bots.Items;
             for (int i = 0; i < bots.Length; i++)
             {
                 if (bots[i].EntityID != entity) continue;
 
-                Vec3F32 delta = p.Pos.ToVec3F32() - bots[i].Pos.ToVec3F32();
-                float reachSq = p.ReachDistance * p.ReachDistance;
+                Vec3F32 delta = player.Pos.ToVec3F32() - bots[i].Pos.ToVec3F32();
+                float reachSq = player.ReachDistance * player.ReachDistance;
                 if (delta.LengthSquared > (reachSq + 1)) return false;
 
                 if (bots[i].name.CaselessEq("blue_flag"))
@@ -135,7 +135,7 @@ namespace CTF
                         return true;
                     }
 
-                    else if (lobby.BlueTeam.Players.Contains(p) && p.Extras.GetBoolean("CTF_HAS_FLAG"))
+                    else if (lobby.BlueTeam.Players.Contains(p) && player.Extras.GetBoolean("CTF_HAS_FLAG"))
                     { // Capture the flag if the player has the enemy flag.
                         lobby.CaptureFlag(p);
                         return true;
@@ -150,7 +150,7 @@ namespace CTF
                         return true;
                     }
 
-                    else if (lobby.RedTeam.Players.Contains(p) && p.Extras.GetBoolean("CTF_HAS_FLAG"))
+                    else if (lobby.RedTeam.Players.Contains(p) && player.Extras.GetBoolean("CTF_HAS_FLAG"))
                     { // Capture the flag if the player has the enemy flag.
                         lobby.CaptureFlag(p);
                         return true;

@@ -61,14 +61,14 @@ namespace CTF
         {
             if (!votingActive)
             {
-                p.Message("&cMap voting is not active right now.");
+                player.Message("&cMap voting is not active right now.");
                 return;
             }
 
             // Validate optionIndex.
             if (optionIndex < 1 || optionIndex > MapVotes.Count)
             {
-                p.Message("&cInvalid vote option.");
+                player.Message("&cInvalid vote option.");
                 return;
             }
 
@@ -76,7 +76,7 @@ namespace CTF
             string selectedMap = MapVotes.Keys.ElementAt(optionIndex - 1);
             MapVotes[selectedMap]++;
 
-            p.Message($"&aYou voted for {selectedMap}.");
+            player.Message($"&aYou voted for {selectedMap}.");
         }
 
         private void CountVotesAndSelectMap(SchedulerTask task)

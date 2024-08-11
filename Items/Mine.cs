@@ -21,9 +21,9 @@ namespace CTF.Items
     {
         public static void HandlePlayerMove(Player p, Position next, byte yaw, byte pitch, ref bool cancel)
         {
-            int x = p.Pos.BlockX;
-            int y = p.Pos.BlockY;
-            int z = p.Pos.BlockZ;
+            int x = player.Pos.BlockX;
+            int y = player.Pos.BlockY;
+            int z = player.Pos.BlockZ;
 
             Lobby lobby = LobbyManager.GetPlayerLobby(p);
             if (lobby == null) return;
@@ -52,7 +52,7 @@ namespace CTF.Items
 
             foreach (Mine mine in mines)
             {
-                p.Message($"There was a mine at {mine.Location.X} {mine.Location.Y} {mine.Location.Z}.");
+                player.Message($"There was a mine at {mine.Location.X} {mine.Location.Y} {mine.Location.Z}.");
                 RemoveMine(p, mine, lobby);
             }
         }
@@ -60,7 +60,7 @@ namespace CTF.Items
         public static void RemoveMine(Player p, Mine mine, Lobby lobby)
         {
             lobby.Map.UpdateBlock(p, (ushort)mine.Location.X, (ushort)mine.Location.Y, (ushort)mine.Location.Z, Block.Air);
-            p.Message($"Removed a mine at {mine.Location.X} {mine.Location.Y} {mine.Location.Z}.");
+            player.Message($"Removed a mine at {mine.Location.X} {mine.Location.Y} {mine.Location.Z}.");
             lobby.mines.Remove(mine);
         }
 

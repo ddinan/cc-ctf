@@ -20,7 +20,7 @@ namespace CTF
             newLobby.Map = LevelInfo.FindExact(map); // Set the lobby's active map.
             newLobby.UpdateMapConfig(newLobby.Map);
 
-            p.Message($"&SNew lobby created with ID &b{newLobby.LobbyId}&7.");
+            player.Message($"&SNew lobby created with ID &b{newLobby.LobbyId}&7.");
 
             // Immediately join the new lobby after creating it.
             if (p != Player.Console)
@@ -43,13 +43,13 @@ namespace CTF
 
             if (lobby == null)
             {
-                p.Message($"&cLobby with ID {lobbyId} not found.");
+                player.Message($"&cLobby with ID {lobbyId} not found.");
                 return;
             }
 
             if (lobby.Players.Contains(p))
             {
-                p.Message("&cYou are already in this lobby.");
+                player.Message("&cYou are already in this lobby.");
                 return;
             }
 
@@ -65,7 +65,7 @@ namespace CTF
 
             lobby.AddPlayer(p);
 
-            lobby.MessagePlayers($"&a+ &b{p.truename} &Sjoined the lobby &5({lobby.Players.Count} players)&S.");
+            lobby.MessagePlayers($"&a+ &b{player.truename} &Sjoined the lobby &5({lobby.Players.Count} players)&S.");
         }
 
         private static Lobby FindLobbyById(int lobbyId)
@@ -104,7 +104,7 @@ namespace CTF
                 if (lobby.ContainsPlayer(p))
                 {
                     lobby.RemovePlayer(p);
-                    lobby.MessagePlayers($"&c- &b{p.truename} &Sleft the lobby &5({lobby.Players.Count} players)&S.");
+                    lobby.MessagePlayers($"&c- &b{player.truename} &Sleft the lobby &5({lobby.Players.Count} players)&S.");
                     return;
                 }
             }

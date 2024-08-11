@@ -17,18 +17,18 @@ namespace CTF
 
             if (message.Length == 0)
             {
-                if (!PlayerClassManager.HasActiveClass(p.truename))
+                if (!PlayerClassManager.HasActiveClass(player.truename))
                 {
-                    p.Message("&SYou do not have an active class.");
+                    player.Message("&SYou do not have an active class.");
                 }
 
                 else
                 {
-                    var playerClass = PlayerClassManager.GetPlayerClass(p.truename);
-                    p.Message($"&SYour class is: &b{playerClass.Name}&S.");
+                    var playerClass = PlayerClassManager.GetPlayerClass(player.truename);
+                    player.Message($"&SYour class is: &b{playerClass.Name}&S.");
                 }
 
-                p.Message("&SYou may change your class with &b/Class [class name]&S.");
+                player.Message("&SYou may change your class with &b/Class [class name]&S.");
                 return;
             }
 
@@ -36,7 +36,7 @@ namespace CTF
 
             if (lobby != null && lobby.IsGameRunning)
             {
-                p.Message("&cYou may not change classes during a game.");
+                player.Message("&cYou may not change classes during a game.");
                 return;
             }
 
@@ -44,7 +44,7 @@ namespace CTF
 
             if (!classes.CaselessContains(args[0]))
             {
-                p.Message($"&cValid classes are: &b{string.Join("&c, &b", classes)}");
+                player.Message($"&cValid classes are: &b{string.Join("&c, &b", classes)}");
                 return;
             }
 
@@ -70,19 +70,19 @@ namespace CTF
 
             if (classMappings.ContainsKey(formattedClassName))
             {
-                PlayerClassManager.SetPlayerClass(p.truename, classMappings[formattedClassName]);
-                p.Message($"&SYou set your class to &b{formattedClassName}&S.");
+                PlayerClassManager.SetPlayerClass(player.truename, classMappings[formattedClassName]);
+                player.Message($"&SYou set your class to &b{formattedClassName}&S.");
             }
 
             else
             {
-                p.Message($"&cClass &b{formattedClassName}&c does not exist.");
+                player.Message($"&cClass &b{formattedClassName}&c does not exist.");
             }
         }
 
         public override void Help(Player p)
         {
-            p.Message("%T/Class [class name] %H- Sets your active class to [class name].");
+            player.Message("%T/Class [class name] %H- Sets your active class to [class name].");
         }
     }
 }

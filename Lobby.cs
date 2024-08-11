@@ -81,7 +81,7 @@ namespace CTF
 
             UpdateMapConfig(newLevel); // Reposition things such as flag and spawn positions.
 
-            foreach (Player p in Players)
+            foreach (Player player in Players)
             {
                 PlayerActions.ChangeMap(p, newLevel); // Send players in the lobby to the new map.
             }
@@ -152,6 +152,8 @@ namespace CTF
                 EndGame();
                 return;
             }
+
+            Gui.SendGuiToPlayers(Players);
 
             MessagePlayers($"&SLobby {LobbyId} - Time left: {timeLeft.Minutes}:{timeLeft.Seconds}");
 
@@ -229,10 +231,10 @@ namespace CTF
         public void RespawnPlayer(Player p)
         {
             Position pos;
-            Vec3U16 spawn = new Vec3U16(p.level.spawnx, p.level.spawny, p.level.spawnz);
+            Vec3U16 spawn = new Vec3U16(player.level.spawnx, player.level.spawny, player.level.spawnz);
 
-            int yaw = p.level.rotx;
-            int pitch = p.level.roty;
+            int yaw = player.level.rotx;
+            int pitch = player.level.roty;
 
             if (BlueTeam.Players.Contains(p))
             {
@@ -257,17 +259,17 @@ namespace CTF
             yaw = Orientation.DegreesToPacked(yaw);
             pitch = Orientation.DegreesToPacked(pitch);
 
-            Position oldPos = p.Pos;
+            Position oldPos = player.Pos;
 
             PlayerActions.RespawnAt(p, pos, (byte)yaw, (byte)pitch);
 
             // If the player is holding a flag, spawn it at their death location.
             // TODO: Why does the player turn into the flag when respawning?
-            if (p.Extras.GetBoolean("CTF_HAS_FLAG"))
+            if (player.Extras.GetBoolean("CTF_HAS_FLAG"))
             {
                 string team = BlueTeam.ContainsPlayer(p) ? "red" : "blue";
-                SpawnFlag(p.level, oldPos, $"{team}_flag");
-                p.Extras["CTF_HAS_FLAG"] = false;
+                SpawnFlag(player.level, oldPos, $"{team}_flag");
+                player.Extras["CTF_HAS_FLAG"] = false;
             }
         }
 
@@ -275,8 +277,8 @@ namespace CTF
         {
             Team team = BlueTeam.Players.Contains(p) ? RedTeam : BlueTeam;
 
-            MessagePlayers($"&S{p.truename} picked up the {team.Name} flag!");
-            p.Extras["CTF_HAS_FLAG"] = true;
+            MessagePlayers($"&S{player.truename} picked up the {team.Name} flag!");
+            player.Extras["CTF_HAS_FLAG"] = true;
 
             PlayerBot.Remove(flag);
         }
@@ -285,13 +287,13 @@ namespace CTF
         {
             Team team = BlueTeam.Players.Contains(p) ? RedTeam : BlueTeam;
 
-            MessagePlayers($"&S{p.truename} captured the {team.Name} flag!");
-            p.Extras["CTF_HAS_FLAG"] = false;
+            MessagePlayers($"&S{player.truename} captured the {team.Name} flag!");
+            player.Extras["CTF_HAS_FLAG"] = false;
 
             if (team == BlueTeam)
             {
                 Position blueFlagPosition = new Position(16 + config.BlueFlagPosition.X * 32, 48 + config.BlueFlagPosition.Y * 32, 16 + config.BlueFlagPosition.Z * 32);
-                SpawnFlag(p.level, blueFlagPosition, "blue_flag");
+                SpawnFlag(player.level, blueFlagPosition, "blue_flag");
 
                 BlueTeam.SetCaptures(BlueTeam.Captures + 1);
             }
@@ -299,7 +301,7 @@ namespace CTF
             else if (team == RedTeam)
             {
                 Position redFlagPosition = new Position(16 + config.RedFlagPosition.X * 32, 48 + config.RedFlagPosition.Y * 32, 16 + config.RedFlagPosition.Z * 32);
-                SpawnFlag(p.level, redFlagPosition, "red_flag");
+                SpawnFlag(player.level, redFlagPosition, "red_flag");
 
                 RedTeam.SetCaptures(RedTeam.Captures + 1);
             }

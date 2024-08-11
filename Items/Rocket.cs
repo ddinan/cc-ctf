@@ -20,7 +20,7 @@ namespace CTF.Items
             activeRockets[p] = data;
 
             SchedulerTask task = new SchedulerTask(RocketCallback, data, TimeSpan.FromMilliseconds(65), true);
-            p.CriticalTasks.Add(task);
+            player.CriticalTasks.Add(task);
         }
 
         RocketData MakeArgs(Player p, Vec3F32 dir)
@@ -32,7 +32,7 @@ namespace CTF.Items
             args.gravity = 0.00f;
             args.thrust = new Vec3F32(dir.X * 0.5f, dir.Y * 0.5f, dir.Z * 0.5f);
 
-            args.pos = p.Pos.BlockCoords;
+            args.pos = player.Pos.BlockCoords;
             args.last = Round(args.pos);
             args.next = Round(args.pos);
 
@@ -43,12 +43,12 @@ namespace CTF.Items
 
         void RevertLast(Player p, RocketData data)
         {
-            p.level.BroadcastRevert(data.last.X, data.last.Y, data.last.Z);
+            player.level.BroadcastRevert(data.last.X, data.last.Y, data.last.Z);
         }
 
         void UpdateNext(Player p, RocketData data)
         {
-            p.level.BroadcastChange(data.next.X, data.next.Y, data.next.Z, data.block);
+            player.level.BroadcastChange(data.next.X, data.next.Y, data.next.Z, data.block);
         }
 
         void OnHitBlock(RocketData data, Vec3U16 pos, BlockID block)
@@ -78,9 +78,9 @@ namespace CTF.Items
 
         bool TickRocket(RocketData data)
         {
-            Player p = data.player;
+            Player player = data.player;
             Vec3U16 pos = data.next;
-            BlockID cur = p.level.GetBlock(pos.X, pos.Y, pos.Z);
+            BlockID cur = player.level.GetBlock(pos.X, pos.Y, pos.Z);
 
             if (cur == Block.Invalid) return false;
             if (cur != Block.Air) { OnHitBlock(data, pos, cur); return false; }
@@ -110,7 +110,7 @@ namespace CTF.Items
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player pl in players)
             {
-                if (pl.level != p.level) continue;
+                if (pl.level != player.level) continue;
                 if (p == pl && skipSelf) continue;
 
                 if (Math.Abs(pl.Pos.BlockX - pos.X) <= 1

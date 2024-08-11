@@ -14,17 +14,17 @@ namespace CTF.Items
 
             if (lobby == null)
             {
-                p.Message("&cYou need to be in a lobby to modify blocks.");
+                player.Message("&cYou need to be in a lobby to modify blocks.");
                 cancel = true;
-                p.RevertBlock(x, y, z);
+                player.RevertBlock(x, y, z);
                 return;
             }
 
             if (!lobby.BlueTeam.Players.Contains(p) && !lobby.RedTeam.Players.Contains(p))
             {
-                p.Message("&cYou need to be in a team to modify blocks.");
+                player.Message("&cYou need to be in a team to modify blocks.");
                 cancel = true;
-                p.RevertBlock(x, y, z);
+                player.RevertBlock(x, y, z);
                 return;
             }
 
@@ -34,14 +34,14 @@ namespace CTF.Items
                 Mine mine = new Mine(p, position);
                 lobby.mines.Add(mine);
 
-                p.Message($"&SAdded a mine at {mine.Location.X} {mine.Location.Y} {mine.Location.Z}.");
+                player.Message($"&SAdded a mine at {mine.Location.X} {mine.Location.Y} {mine.Location.Z}.");
 
                 // Wait for 3 seconds before activating the mine.
                 Task.Run(async () =>
                 {
                     await Task.Delay(3000);
                     mine.IsActive = true;
-                    p.Message("&SMine is now active!");
+                    player.Message("&SMine is now active!");
                 });
 
                 return;
@@ -49,10 +49,10 @@ namespace CTF.Items
 
             if (placing && block == Block.TNT)
             {
-                if (p.Extras.GetBoolean("CTF_HAS_TNT"))
+                if (player.Extras.GetBoolean("CTF_HAS_TNT"))
                 {
-                    p.Extras["CTF_HAS_TNT"] = false;
-                    string[] coords = p.Extras.GetString("CTF_TNT_COORDS").Split(';');
+                    player.Extras["CTF_HAS_TNT"] = false;
+                    string[] coords = player.Extras.GetString("CTF_TNT_COORDS").Split(';');
 
                     // Revert the last TNT.
                     ushort oldX = ushort.Parse(coords[0]);
@@ -61,18 +61,18 @@ namespace CTF.Items
 
                     ModifyMap(p, lobby, oldX, oldY, oldZ);
                     KillPlayers(p, oldX, oldY, oldZ, lobby);
-                    p.level.UpdateBlock(p, oldX, oldY, oldZ, Block.Air);
+                    player.level.UpdateBlock(p, oldX, oldY, oldZ, Block.Air);
 
 
                     // Revert the current TNT.
                     cancel = true;
-                    p.RevertBlock(x, y, z);
+                    player.RevertBlock(x, y, z);
                 }
 
                 else
                 {
-                    p.Extras["CTF_HAS_TNT"] = true;
-                    p.Extras["CTF_TNT_COORDS"] = $"{x};{y};{z}";
+                    player.Extras["CTF_HAS_TNT"] = true;
+                    player.Extras["CTF_TNT_COORDS"] = $"{x};{y};{z}";
                 }
 
                 return;
@@ -81,7 +81,7 @@ namespace CTF.Items
 
         private static void ModifyMap(Player p, Lobby lobby, ushort x, ushort y, ushort z, int radius = 2)
         {
-            BufferedBlockSender buffer = new BufferedBlockSender(p.level);
+            BufferedBlockSender buffer = new BufferedBlockSender(player.level);
 
             for (int dx = x - radius; dx <= x + radius; dx++)
             {
@@ -89,9 +89,9 @@ namespace CTF.Items
                 {
                     for (int dz = z - radius; dz <= z + radius; dz++)
                     {
-                        BlockID block = p.level.GetBlock(x, y, z);
+                        BlockID block = player.level.GetBlock(x, y, z);
 
-                        if (p.level.Props[block].OPBlock || block == Block.Bedrock) continue; // Don't explode OP blocks.
+                        if (player.level.Props[block].OPBlock || block == Block.Bedrock) continue; // Don't explode OP blocks.
                         if (block == Block.Invalid) continue;
 
                         Mine mine = Mines.GetMineAtPosition(lobby, (ushort)dx, (ushort)dy, (ushort)dz);
@@ -101,8 +101,8 @@ namespace CTF.Items
                             Mines.RemoveMine(p, mine, lobby);
                         }
 
-                        p.level.SetBlock((ushort)dx, (ushort)dy, (ushort)dz, Block.Air);
-                        int index = p.level.PosToInt((ushort)dx, (ushort)dy, (ushort)dz);
+                        player.level.SetBlock((ushort)dx, (ushort)dy, (ushort)dz, Block.Air);
+                        int index = player.level.PosToInt((ushort)dx, (ushort)dy, (ushort)dz);
                         buffer.Add(index, Block.Air);
                     }
                 }
@@ -127,7 +127,7 @@ namespace CTF.Items
                 // If the target player is in range of the TNT.
                 if (dx * dx + dy * dy + dz * dz <= radius * radius)
                 {
-                    lobby.MessagePlayers($"{pl.truename} %Swas exploded by {p.truename}.");
+                    lobby.MessagePlayers($"{pl.truename} %Swas exploded by {player.truename}.");
                     lobby.RespawnPlayer(pl);
                 }
             }

@@ -41,19 +41,19 @@ namespace CTF
 
             if (lobby == null)
             {
-                p.Message("&cYou are not in a lobby.");
+                player.Message("&cYou are not in a lobby.");
                 return;
             }
 
             if (lobby.BlueTeam.Players.Contains(p) && team.CaselessEq("blue"))
             {
-                p.Message("&cYou are already on this team.");
+                player.Message("&cYou are already on this team.");
                 return;
             }
 
             if (lobby.RedTeam.Players.Contains(p) && team.CaselessEq("red"))
             {
-                p.Message("&cYou are already on this team.");
+                player.Message("&cYou are already on this team.");
                 return;
             }
 
@@ -61,7 +61,7 @@ namespace CTF
             {
                 if (lobby.BlueTeam.Players.Contains(p))
                 {
-                    p.Message("&cYou are already on this team.");
+                    player.Message("&cYou are already on this team.");
                     return;
                 }
 
@@ -71,14 +71,14 @@ namespace CTF
                 }
 
                 lobby.BlueTeam.Players.Add(p);
-                lobby.MessagePlayers($"&b{p.truename} &Sjoined the &9blue &Steam.");
+                lobby.MessagePlayers($"&b{player.truename} &Sjoined the &9blue &Steam.");
             }
 
             else if (team.CaselessEq("red"))
             {
                 if (lobby.RedTeam.Players.Contains(p))
                 {
-                    p.Message("&cYou are already on this team.");
+                    player.Message("&cYou are already on this team.");
                     return;
                 }
 
@@ -88,7 +88,7 @@ namespace CTF
                 }
 
                 lobby.RedTeam.Players.Add(p);
-                lobby.MessagePlayers($"&b{p.truename} &Sjoined the &cred &Steam.");
+                lobby.MessagePlayers($"&b{player.truename} &Sjoined the &cred &Steam.");
             }
 
             else
@@ -103,7 +103,7 @@ namespace CTF
                     lobby.RedTeam.Players.Remove(p);
                 }
 
-                lobby.MessagePlayers($"&b{p.truename} &Sjoined the &7spectator &Steam.");
+                lobby.MessagePlayers($"&b{player.truename} &Sjoined the &7spectator &Steam.");
             }
 
             lobby.RespawnPlayer(p); // Spawn the player at their new team's spawn point.
@@ -111,7 +111,7 @@ namespace CTF
 
         public override void Help(Player p)
         {
-            p.Message("%T/Team red/blue/spectator %H- Joins a team.");
+            player.Message("%T/Team red/blue/spectator %H- Joins a team.");
         }
     }
 }
