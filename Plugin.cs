@@ -24,7 +24,7 @@ namespace CTF
             OnPlayerClickEvent.Register(HandlePlayerClick, Priority.Low);
             OnPlayerFinishConnectingEvent.Register(HandlePlayerFinishConnecting, Priority.Low);
             OnPlayerMoveEvent.Register(Mines.HandlePlayerMove, Priority.Low);
-            
+
 
             LobbyManager.CreateNewLobby(Player.Console); // Create the default lobby.
         }
@@ -91,7 +91,8 @@ namespace CTF
 
             if (heldBlock == Block.Yellow)
             {
-                p.Message("line");
+                p.Message("bridge");
+                Bridge.BuildBridge(p, yaw, pitch);
                 return;
             }
 
@@ -133,7 +134,7 @@ namespace CTF
                         lobby.ClickOnFlag(p, bots[i]);
                         return true;
                     }
-                    
+
                     else if (lobby.BlueTeam.Players.Contains(p) && p.Extras.GetBoolean("CTF_HAS_FLAG"))
                     { // Capture the flag if the player has the enemy flag.
                         lobby.CaptureFlag(p);
