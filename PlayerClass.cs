@@ -1,4 +1,4 @@
-﻿namespace CTF.Classes
+﻿namespace CTF
 {
     public enum ClassType
     {

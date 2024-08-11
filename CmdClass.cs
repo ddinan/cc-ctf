@@ -1,4 +1,5 @@
-﻿using MCGalaxy;
+﻿using CTF.Classes;
+using MCGalaxy;
 using System.Collections.Generic;
 using System.Globalization;
 
@@ -16,14 +17,15 @@ namespace CTF
 
             if (message.Length == 0)
             {
-                if (p.Extras.GetString("CTF_ACTIVE_CLASS") == null)
+                if (!PlayerClassManager.HasActiveClass(p.truename))
                 {
                     p.Message("&SYou do not have an active class.");
                 }
 
                 else
                 {
-                    p.Message($"&SYour class is: &b{p.Extras.GetString("CTF_ACTIVE_CLASS")}&S.");
+                    var playerClass = PlayerClassManager.GetPlayerClass(p.truename);
+                    p.Message($"&SYour class is: &b{playerClass.Name}&S.");
                 }
 
                 p.Message("&SYou may change your class with &b/Class [class name]&S.");
@@ -51,9 +53,31 @@ namespace CTF
 
         private void SetClass(Player p, string className)
         {
+            Dictionary<string, PlayerClass> classMappings = new Dictionary<string, PlayerClass>
+            {
+                { "Bridger", new Bridger() },
+                { "Demolitionist", new Demolitionist() },
+                { "Grenadier", new Grenadier() },
+                { "Guardian", new Guardian() },
+                { "Mechanic", new Mechanic() },
+                { "Pyromaniac", new Pyromaniac() },
+                { "Shield", new Shield() },
+                { "Sniper", new Sniper() }
+            };
+
             TextInfo ti = new CultureInfo("en-US", false).TextInfo;
-            p.Extras["CTF_ACTIVE_CLASS"] = ti.ToTitleCase(className);
-            p.Message($"&SYou set your class to &b{ti.ToTitleCase(className)}.");
+            string formattedClassName = ti.ToTitleCase(className);
+
+            if (classMappings.ContainsKey(formattedClassName))
+            {
+                PlayerClassManager.SetPlayerClass(p.truename, classMappings[formattedClassName]);
+                p.Message($"&SYou set your class to &b{formattedClassName}&S.");
+            }
+
+            else
+            {
+                p.Message($"&cClass &b{formattedClassName}&c does not exist.");
+            }
         }
 
         public override void Help(Player p)
