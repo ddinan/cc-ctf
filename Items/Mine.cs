@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace CTF
+namespace CTF.Items
 {
     public class Mine
     {

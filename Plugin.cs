@@ -1,7 +1,10 @@
-﻿using MCGalaxy;
+﻿using CTF.Items;
+using MCGalaxy;
 using MCGalaxy.Events.PlayerEvents;
 using MCGalaxy.Maths;
 using System.Collections.Generic;
+
+using BlockID = System.UInt16;
 
 namespace CTF
 {
@@ -13,6 +16,7 @@ namespace CTF
 
         public override void Load(bool startup)
         {
+            Command.Register(new CmdClass());
             Command.Register(new CmdJoinTeam());
             Command.Register(new CmdLobby());
 
@@ -20,13 +24,14 @@ namespace CTF
             OnPlayerClickEvent.Register(HandlePlayerClick, Priority.Low);
             OnPlayerFinishConnectingEvent.Register(HandlePlayerFinishConnecting, Priority.Low);
             OnPlayerMoveEvent.Register(Mines.HandlePlayerMove, Priority.Low);
-            
+
 
             LobbyManager.CreateNewLobby(Player.Console); // Create the default lobby.
         }
 
         public override void Unload(bool shutdown)
         {
+            Command.Unregister(Command.Find("Class"));
             Command.Unregister(Command.Find("JoinTeam"));
             Command.Unregister(Command.Find("Lobby"));
 
@@ -53,6 +58,57 @@ namespace CTF
         {
             if (action != MouseAction.Pressed) return;
             if (entity != Entities.SelfID && ClickOnBot(p, entity)) return;
+
+            BlockID heldBlock = p.GetHeldBlock();
+
+            // Weapons testing.
+
+            if (heldBlock == Block.Red)
+            {
+                p.Message("grenade");
+                Grenade grenade = new Grenade();
+                grenade.ThrowGrenade(p, yaw, pitch);
+                return;
+            }
+
+            if (heldBlock == Block.Orange)
+            {
+                if (p.Extras.GetBoolean("CTF_FLAMETHROWER_ACTIVATED"))
+                {
+                    p.Message("flamethrower off");
+                    p.Extras["CTF_FLAMETHROWER_ACTIVATED"] = false;
+                    return;
+                }
+
+                else
+                {
+                    p.Message("flamethrower on");
+                    Flamethrower flamethrower = new Flamethrower();
+                    flamethrower.ActivateFlamethrower(p, yaw, pitch);
+                    return;
+                }
+            }
+
+            if (heldBlock == Block.Yellow)
+            {
+                p.Message("bridge");
+                Bridge.BuildBridge(p, yaw, pitch);
+                return;
+            }
+
+            if (heldBlock == Block.Lime)
+            {
+                p.Message("rocket");
+                Rocket rocket = new Rocket();
+                rocket.LaunchRocket(p, yaw, pitch);
+                return;
+            }
+
+            if (heldBlock == Block.Green)
+            {
+                p.Message("shield");
+                return;
+            }
         }
 
         private bool ClickOnBot(Player p, byte entity)
@@ -78,7 +134,7 @@ namespace CTF
                         lobby.ClickOnFlag(p, bots[i]);
                         return true;
                     }
-                    
+
                     else if (lobby.BlueTeam.Players.Contains(p) && p.Extras.GetBoolean("CTF_HAS_FLAG"))
                     { // Capture the flag if the player has the enemy flag.
                         lobby.CaptureFlag(p);
