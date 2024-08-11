@@ -6,7 +6,7 @@ namespace CTF.Classes
     {
         public int TNTRadius { get; private set; } = 3;
 
-        public Demolitionist() : base("Demolitionist", ClassType.Offense, false) { }
+        public Demolitionist() : base("Demolitionist", ClassType.Offense, false, 150) { }
 
         public override void UseAbility()
         {

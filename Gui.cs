@@ -53,6 +53,12 @@ namespace CTF
         {
             foreach (Player player in players)
             {
+                if (!PlayerClassManager.HasActiveClass(player.truename)) continue;
+
+                PlayerClass playerClass = PlayerClassManager.GetPlayerClass(player.truename);
+                if (playerClass == null) continue;
+
+                player.SendCpeMessage(CpeMessageType.BottomRight3, playerClass.PowerUpGuiFormat);
             }
         }
     }

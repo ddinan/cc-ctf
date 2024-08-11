@@ -6,7 +6,7 @@ namespace CTF.Classes
     {
         public int Fuel { get; private set; } = 100;
 
-        public Pyromaniac() : base("Pyromaniac", ClassType.Offense, true) { }
+        public Pyromaniac() : base("Pyromaniac", ClassType.Offense, true, 120) { }
 
         public override void UseAbility()
         {

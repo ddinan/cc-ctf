@@ -6,7 +6,7 @@ namespace CTF.Classes
     {
         public bool CanRevive { get; private set; } = true;
 
-        public Guardian() : base("Guardian", ClassType.Support, true) { }
+        public Guardian() : base("Guardian", ClassType.Support, true, 120) { }
 
         public override void UseAbility()
         {

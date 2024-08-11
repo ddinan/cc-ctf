@@ -6,7 +6,7 @@ namespace CTF.Classes
     {
         public bool HasGrenade { get; private set; } = true;
 
-        public Grenadier() : base("Grenadier", ClassType.Support, true) { }
+        public Grenadier() : base("Grenadier", ClassType.Support, true, 90) { }
 
         public override void UseAbility()
         {

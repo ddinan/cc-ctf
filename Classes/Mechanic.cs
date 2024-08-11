@@ -6,7 +6,7 @@ namespace CTF.Classes
     {
         public int Mines { get; private set; } = 2;
 
-        public Mechanic() : base("Mechanic", ClassType.Defense, true) { }
+        public Mechanic() : base("Mechanic", ClassType.Defense, true, 15) { }
 
         public override void UseAbility()
         {

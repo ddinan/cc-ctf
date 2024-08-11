@@ -6,7 +6,7 @@ namespace CTF.Classes
     {
         public int ShieldDurability { get; private set; } = 5;
 
-        public Shield() : base("Shield", ClassType.Hybrid, true) { }
+        public Shield() : base("Shield", ClassType.Hybrid, true, 150) { }
 
         public override void UseAbility()
         {
