@@ -14,12 +14,12 @@ namespace CTF.Items
     {
         Dictionary<Player, FlamethrowerData> activeFlamethrowers = new Dictionary<Player, FlamethrowerData>();
 
-        public void ActivateFlamethrower(Player p, ushort yaw, ushort pitch)
+        public void ActivateFlamethrower(Player player, ushort yaw, ushort pitch)
         {
             Vec3F32 dir = DirUtils.GetDirVectorExt(yaw, pitch);
 
-            FlamethrowerData data = MakeArgs(p, dir);
-            activeFlamethrowers[p] = data;
+            FlamethrowerData data = MakeArgs(player, dir);
+            activeFlamethrowers[player] = data;
 
             player.Extras["CTF_FLAMETHROWER_ACTIVATED"] = true;
 
@@ -27,7 +27,7 @@ namespace CTF.Items
             player.CriticalTasks.Add(task);
         }
 
-        FlamethrowerData MakeArgs(Player p, Vec3F32 dir)
+        FlamethrowerData MakeArgs(Player player, Vec3F32 dir)
         {
             FlamethrowerData args = new FlamethrowerData();
             args.block = Block.Lava;
@@ -35,7 +35,7 @@ namespace CTF.Items
             // Offset the starting position by 3 blocks in the direction of the flamethrower
             args.pos = player.Pos.BlockCoords + dir * 3;
             args.dir = dir;
-            args.player = p;
+            args.player = player;
             args.length = 3;
 
             return args;
@@ -49,7 +49,7 @@ namespace CTF.Items
             {
                 if (!data.flamePositions.Contains(pos))
                 {
-                    player.level.UpdateBlock(p, pos.X, pos.Y, pos.Z, Block.Air);
+                    player.level.UpdateBlock(player, pos.X, pos.Y, pos.Z, Block.Air);
                 }
             }
 
@@ -57,7 +57,7 @@ namespace CTF.Items
             {
                 foreach (Vec3U16 pos in data.flamePositions)
                 {
-                    player.level.UpdateBlock(p, pos.X, pos.Y, pos.Z, Block.Air);
+                    player.level.UpdateBlock(player, pos.X, pos.Y, pos.Z, Block.Air);
                 }
             }
         }
@@ -81,7 +81,7 @@ namespace CTF.Items
                 }
 
                 // Check if we hit a player.
-                Player victim = PlayerAt(p, pos, true);
+                Player victim = PlayerAt(player, pos, true);
                 if (victim != null)
                 {
                     OnHitPlayer(data, victim);
@@ -92,7 +92,7 @@ namespace CTF.Items
                 data.flamePositions.Add(pos);
                 if (!data.previousFlamePositions.Contains(pos))
                 {
-                    player.level.UpdateBlock(p, pos.X, pos.Y, pos.Z, data.block);
+                    player.level.UpdateBlock(player, pos.X, pos.Y, pos.Z, data.block);
                 }
             }
         }
@@ -133,13 +133,13 @@ namespace CTF.Items
         }
 
         // Stolen from MCGalaxy.
-        private Player PlayerAt(Player p, Vec3U16 pos, bool skipSelf)
+        private Player PlayerAt(Player player, Vec3U16 pos, bool skipSelf)
         {
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player pl in players)
             {
                 if (pl.level != player.level) continue;
-                if (p == pl && skipSelf) continue;
+                if (player == pl && skipSelf) continue;
 
                 if (Math.Abs(pl.Pos.BlockX - pos.X) <= 1
                     && Math.Abs(pl.Pos.BlockY - pos.Y) <= 1
@@ -151,9 +151,9 @@ namespace CTF.Items
             return null;
         }
 
-        public void DeactivateFlamethrower(Player p)
+        public void DeactivateFlamethrower(Player player)
         {
-            if (activeFlamethrowers.TryGetValue(p, out FlamethrowerData data))
+            if (activeFlamethrowers.TryGetValue(player, out FlamethrowerData data))
             {
                 player.Extras["CTF_FLAMETHROWER_ACTIVATED"] = false;
             }

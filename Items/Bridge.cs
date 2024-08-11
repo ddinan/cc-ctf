@@ -10,7 +10,7 @@ namespace CTF.Items
 {
     public class Bridge
     {
-        public static async void BuildBridge(Player p, ushort yaw, ushort pitch)
+        public static async void BuildBridge(Player player, ushort yaw, ushort pitch)
         {
             Vec3F32 dir = DirUtils.GetDirVectorExt(yaw, pitch);
             Vec3F32 normalizedDir = Vec3F32.Normalise(dir);
@@ -25,7 +25,7 @@ namespace CTF.Items
                 // Leave a 1-block gap between the player and the bridge.
                 if (i > 1)
                 {
-                    player.level.UpdateBlock(p, (ushort)currentPos.X, (ushort)currentPos.Y, (ushort)currentPos.Z, Block.Wood);
+                    player.level.UpdateBlock(player, (ushort)currentPos.X, (ushort)currentPos.Y, (ushort)currentPos.Z, Block.Wood);
                 }
 
                 await Task.Delay(15);

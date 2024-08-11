@@ -8,9 +8,9 @@ namespace CTF.Items
     public class TNT
     {
         // TODO: Move HandleBlockChanging out of TNT class.
-        public static void HandleBlockChanging(Player p, ushort x, ushort y, ushort z, BlockID block, bool placing, ref bool cancel)
+        public static void HandleBlockChanging(Player player, ushort x, ushort y, ushort z, BlockID block, bool placing, ref bool cancel)
         {
-            Lobby lobby = LobbyManager.GetPlayerLobby(p);
+            Lobby lobby = LobbyManager.GetPlayerLobby(player);
 
             if (lobby == null)
             {
@@ -20,7 +20,7 @@ namespace CTF.Items
                 return;
             }
 
-            if (!lobby.BlueTeam.Players.Contains(p) && !lobby.RedTeam.Players.Contains(p))
+            if (!lobby.BlueTeam.Players.Contains(player) && !lobby.RedTeam.Players.Contains(player))
             {
                 player.Message("&cYou need to be in a team to modify blocks.");
                 cancel = true;
@@ -31,7 +31,7 @@ namespace CTF.Items
             if (placing && block == Block.Gray)
             {
                 Position position = new Position(x, y, z);
-                Mine mine = new Mine(p, position);
+                Mine mine = new Mine(player, position);
                 lobby.mines.Add(mine);
 
                 player.Message($"&SAdded a mine at {mine.Location.X} {mine.Location.Y} {mine.Location.Z}.");
@@ -59,9 +59,9 @@ namespace CTF.Items
                     ushort oldY = ushort.Parse(coords[1]);
                     ushort oldZ = ushort.Parse(coords[2]);
 
-                    ModifyMap(p, lobby, oldX, oldY, oldZ);
-                    KillPlayers(p, oldX, oldY, oldZ, lobby);
-                    player.level.UpdateBlock(p, oldX, oldY, oldZ, Block.Air);
+                    ModifyMap(player, lobby, oldX, oldY, oldZ);
+                    KillPlayers(player, oldX, oldY, oldZ, lobby);
+                    player.level.UpdateBlock(player, oldX, oldY, oldZ, Block.Air);
 
 
                     // Revert the current TNT.
@@ -79,7 +79,7 @@ namespace CTF.Items
             }
         }
 
-        private static void ModifyMap(Player p, Lobby lobby, ushort x, ushort y, ushort z, int radius = 2)
+        private static void ModifyMap(Player player, Lobby lobby, ushort x, ushort y, ushort z, int radius = 2)
         {
             BufferedBlockSender buffer = new BufferedBlockSender(player.level);
 
@@ -97,8 +97,8 @@ namespace CTF.Items
                         Mine mine = Mines.GetMineAtPosition(lobby, (ushort)dx, (ushort)dy, (ushort)dz);
                         if (mine != null)
                         {
-                            if (mine.Owner == p) continue;
-                            Mines.RemoveMine(p, mine, lobby);
+                            if (mine.Owner == player) continue;
+                            Mines.RemoveMine(player, mine, lobby);
                         }
 
                         player.level.SetBlock((ushort)dx, (ushort)dy, (ushort)dz, Block.Air);
@@ -111,15 +111,15 @@ namespace CTF.Items
             buffer.Flush();
         }
 
-        private static void KillPlayers(Player p, ushort x, ushort y, ushort z, Lobby lobby, int radius = 2)
+        private static void KillPlayers(Player player, ushort x, ushort y, ushort z, Lobby lobby, int radius = 2)
         {
             foreach (Player pl in lobby.Players)
             {
-                if (pl == p) continue;
+                if (pl == player) continue;
 
                 // Do not kill if the target is a spectator or they are on the same team as the player.
-                if (lobby.BlueTeam.Players.Contains(pl) && lobby.BlueTeam.Players.Contains(p)) continue;
-                if (lobby.RedTeam.Players.Contains(pl) && lobby.RedTeam.Players.Contains(p)) continue;
+                if (lobby.BlueTeam.Players.Contains(pl) && lobby.BlueTeam.Players.Contains(player)) continue;
+                if (lobby.RedTeam.Players.Contains(pl) && lobby.RedTeam.Players.Contains(player)) continue;
                 if (!lobby.BlueTeam.Players.Contains(pl) && !lobby.RedTeam.Players.Contains(pl)) continue;
 
                 int dx = pl.Pos.BlockX - x, dy = pl.Pos.FeetBlockCoords.Y - y, dz = pl.Pos.BlockZ - z;

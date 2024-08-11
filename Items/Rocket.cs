@@ -12,18 +12,18 @@ namespace CTF.Items
     {
         readonly Dictionary<Player, RocketData> activeRockets = new Dictionary<Player, RocketData>();
 
-        public void LaunchRocket(Player p, ushort yaw, ushort pitch)
+        public void LaunchRocket(Player player, ushort yaw, ushort pitch)
         {
             Vec3F32 dir = DirUtils.GetDirVectorExt(yaw, pitch);
 
-            RocketData data = MakeArgs(p, dir);
-            activeRockets[p] = data;
+            RocketData data = MakeArgs(player, dir);
+            activeRockets[player] = data;
 
             SchedulerTask task = new SchedulerTask(RocketCallback, data, TimeSpan.FromMilliseconds(65), true);
             player.CriticalTasks.Add(task);
         }
 
-        RocketData MakeArgs(Player p, Vec3F32 dir)
+        RocketData MakeArgs(Player player, Vec3F32 dir)
         {
             RocketData args = new RocketData();
             args.block = Block.Lime;
@@ -37,16 +37,16 @@ namespace CTF.Items
             args.next = Round(args.pos);
 
             args.vel = new Vec3F32(dir.X * 1.5f, dir.Y * 1.5f, dir.Z * 1.5f);
-            args.player = p;
+            args.player = player;
             return args;
         }
 
-        void RevertLast(Player p, RocketData data)
+        void RevertLast(Player player, RocketData data)
         {
             player.level.BroadcastRevert(data.last.X, data.last.Y, data.last.Z);
         }
 
-        void UpdateNext(Player p, RocketData data)
+        void UpdateNext(Player player, RocketData data)
         {
             player.level.BroadcastChange(data.next.X, data.next.Y, data.next.Z, data.block);
         }
@@ -85,7 +85,7 @@ namespace CTF.Items
             if (cur == Block.Invalid) return false;
             if (cur != Block.Air) { OnHitBlock(data, pos, cur); return false; }
 
-            Player pl = PlayerAt(p, pos, true);
+            Player pl = PlayerAt(player, pos, true);
             if (pl != null) { OnHitPlayer(data, pl); return false; }
 
             // Apply physics.
@@ -98,20 +98,20 @@ namespace CTF.Items
             if (data.last == data.next) return true;
 
             // Update projectile position.
-            RevertLast(p, data);
-            UpdateNext(p, data);
+            RevertLast(player, data);
+            UpdateNext(player, data);
             data.last = data.next;
             return true;
         }
 
         // Stolen from MCGalaxy.
-        private Player PlayerAt(Player p, Vec3U16 pos, bool skipSelf)
+        private Player PlayerAt(Player player, Vec3U16 pos, bool skipSelf)
         {
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player pl in players)
             {
                 if (pl.level != player.level) continue;
-                if (p == pl && skipSelf) continue;
+                if (player == pl && skipSelf) continue;
 
                 if (Math.Abs(pl.Pos.BlockX - pos.X) <= 1
                     && Math.Abs(pl.Pos.BlockY - pos.Y) <= 1

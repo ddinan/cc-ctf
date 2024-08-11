@@ -8,34 +8,34 @@ namespace CTF
         public override string shortcut { get { return "game"; } }
         public override string type { get { return "information"; } }
 
-        public override void Use(Player p, string message, CommandData data)
+        public override void Use(Player player, string message, CommandData data)
         {
             string[] args = message.SplitSpaces();
 
             if (args.Length == 0)
             {
-                Help(p);
+                Help(player);
                 return;
             }
 
             switch (args[0])
             {
                 case "list":
-                    HandleList(p);
+                    HandleList(player);
                     break;
                 case "join":
-                    HandleJoin(p, args);
+                    HandleJoin(player, args);
                     break;
                 case "create":
-                    HandleCreate(p);
+                    HandleCreate(player);
                     break;
                 default:
-                    Help(p);
+                    Help(player);
                     break;
             }
         }
 
-        private void HandleList(Player p)
+        private void HandleList(Player player)
         {
             player.Message("Active Lobbies:");
 
@@ -45,7 +45,7 @@ namespace CTF
             }
         }
 
-        private void HandleJoin(Player p, string[] args)
+        private void HandleJoin(Player player, string[] args)
         {
             if (args.Length < 2) {
                 player.Message("Please specify the lobby to join with /lobby join [lobby id]");
@@ -58,15 +58,15 @@ namespace CTF
                 return;
             }
 
-            LobbyManager.JoinLobby(p, id);
+            LobbyManager.JoinLobby(player, id);
         }
 
-        private void HandleCreate(Player p)
+        private void HandleCreate(Player player)
         {
-            LobbyManager.CreateNewLobby(p);
+            LobbyManager.CreateNewLobby(player);
         }
 
-        public override void Help(Player p)
+        public override void Help(Player player)
         {
             player.Message("%T/Lobby list %H- Lists all available game lobbies.");
             player.Message("%T/Lobby join [lobby] %H- Joins an existing game lobby, if permitted.");

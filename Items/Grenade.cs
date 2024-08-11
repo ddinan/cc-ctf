@@ -12,18 +12,18 @@ namespace CTF.Items
     {
         readonly Dictionary<Player, GrenadeData> activeGrenades = new Dictionary<Player, GrenadeData>();
 
-        public void ThrowGrenade(Player p, ushort yaw, ushort pitch)
+        public void ThrowGrenade(Player player, ushort yaw, ushort pitch)
         {
             Vec3F32 dir = DirUtils.GetDirVectorExt(yaw, pitch);
 
-            GrenadeData data = MakeArgs(p, dir);
-            activeGrenades[p] = data;
+            GrenadeData data = MakeArgs(player, dir);
+            activeGrenades[player] = data;
 
             SchedulerTask task = new SchedulerTask(GrenadeCallback, data, TimeSpan.FromMilliseconds(85), true);
             player.CriticalTasks.Add(task);
         }
 
-        GrenadeData MakeArgs(Player p, Vec3F32 dir)
+        GrenadeData MakeArgs(Player player, Vec3F32 dir)
         {
             GrenadeData args = new GrenadeData();
             args.block = Block.Red;
@@ -36,16 +36,16 @@ namespace CTF.Items
             args.next = Round(args.pos);
 
             args.vel = new Vec3F32(dir.X * 0.95f, dir.Y * 0.95f, dir.Z * 0.95f);
-            args.player = p;
+            args.player = player;
             return args;
         }
 
-        void RevertLast(Player p, GrenadeData data)
+        void RevertLast(Player player, GrenadeData data)
         {
             player.level.BroadcastRevert(data.last.X, data.last.Y, data.last.Z);
         }
 
-        void UpdateNext(Player p, GrenadeData data)
+        void UpdateNext(Player player, GrenadeData data)
         {
             player.level.BroadcastChange(data.next.X, data.next.Y, data.next.Z, data.block);
         }
@@ -85,7 +85,7 @@ namespace CTF.Items
             if (cur == Block.Invalid) return false;
             if (cur != Block.Air) { OnHitBlock(data, pos, cur); return false; }
 
-            Player pl = PlayerAt(p, pos, true);
+            Player pl = PlayerAt(player, pos, true);
             if (pl != null) { OnHitPlayer(data, pl); return false; }
 
             // Apply physics.
@@ -97,20 +97,20 @@ namespace CTF.Items
             if (data.last == data.next) return true;
 
             // Update projectile position.
-            RevertLast(p, data);
-            UpdateNext(p, data);
+            RevertLast(player, data);
+            UpdateNext(player, data);
             data.last = data.next;
             return true;
         }
 
         // Stolen from MCGalaxy.
-        private Player PlayerAt(Player p, Vec3U16 pos, bool skipSelf)
+        private Player PlayerAt(Player player, Vec3U16 pos, bool skipSelf)
         {
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player pl in players)
             {
                 if (pl.level != player.level) continue;
-                if (p == pl && skipSelf) continue;
+                if (player == pl && skipSelf) continue;
 
                 if (Math.Abs(pl.Pos.BlockX - pos.X) <= 1
                     && Math.Abs(pl.Pos.BlockY - pos.Y) <= 1

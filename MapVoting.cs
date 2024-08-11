@@ -57,7 +57,7 @@ namespace CTF
             return randomMaps;
         }
 
-        public void VoteForMap(Player p, int optionIndex)
+        public void VoteForMap(Player player, int optionIndex)
         {
             if (!votingActive)
             {

@@ -41,16 +41,16 @@ namespace CTF
             mapVoting = new MapVoting(this, availableMaps);
         }
 
-        public void AddPlayer(Player p)
+        public void AddPlayer(Player player)
         {
-            Players.Add(p);
+            Players.Add(player);
         }
 
-        public void RemovePlayer(Player p)
+        public void RemovePlayer(Player player)
         {
-            if (Players.Contains(p))
+            if (Players.Contains(player))
             {
-                Players.Remove(p);
+                Players.Remove(player);
 
                 // Check if lobby is now empty.
                 if (Players.Count == 0 && LobbyId != 1)
@@ -83,7 +83,7 @@ namespace CTF
 
             foreach (Player player in Players)
             {
-                PlayerActions.ChangeMap(p, newLevel); // Send players in the lobby to the new map.
+                PlayerActions.ChangeMap(player, newLevel); // Send players in the lobby to the new map.
             }
 
             if (Map != null)
@@ -228,7 +228,7 @@ namespace CTF
             PlayerBot.Add(bot);
         }
 
-        public void RespawnPlayer(Player p)
+        public void RespawnPlayer(Player player)
         {
             Position pos;
             Vec3U16 spawn = new Vec3U16(player.level.spawnx, player.level.spawny, player.level.spawnz);
@@ -236,14 +236,14 @@ namespace CTF
             int yaw = player.level.rotx;
             int pitch = player.level.roty;
 
-            if (BlueTeam.Players.Contains(p))
+            if (BlueTeam.Players.Contains(player))
             {
                 spawn = config.BlueSpawnPosition;
                 yaw = config.BlueSpawnYaw;
                 pitch = config.BlueSpawnPitch;
             }
 
-            else if (RedTeam.Players.Contains(p))
+            else if (RedTeam.Players.Contains(player))
             {
                 spawn = config.RedSpawnPosition;
                 yaw = config.RedSpawnYaw;
@@ -261,21 +261,21 @@ namespace CTF
 
             Position oldPos = player.Pos;
 
-            PlayerActions.RespawnAt(p, pos, (byte)yaw, (byte)pitch);
+            PlayerActions.RespawnAt(player, pos, (byte)yaw, (byte)pitch);
 
             // If the player is holding a flag, spawn it at their death location.
             // TODO: Why does the player turn into the flag when respawning?
             if (player.Extras.GetBoolean("CTF_HAS_FLAG"))
             {
-                string team = BlueTeam.ContainsPlayer(p) ? "red" : "blue";
+                string team = BlueTeam.ContainsPlayer(player) ? "red" : "blue";
                 SpawnFlag(player.level, oldPos, $"{team}_flag");
                 player.Extras["CTF_HAS_FLAG"] = false;
             }
         }
 
-        public void ClickOnFlag(Player p, PlayerBot flag)
+        public void ClickOnFlag(Player player, PlayerBot flag)
         {
-            Team team = BlueTeam.Players.Contains(p) ? RedTeam : BlueTeam;
+            Team team = BlueTeam.Players.Contains(player) ? RedTeam : BlueTeam;
 
             MessagePlayers($"&S{player.truename} picked up the {team.Name} flag!");
             player.Extras["CTF_HAS_FLAG"] = true;
@@ -283,9 +283,9 @@ namespace CTF
             PlayerBot.Remove(flag);
         }
 
-        public void CaptureFlag(Player p)
+        public void CaptureFlag(Player player)
         {
-            Team team = BlueTeam.Players.Contains(p) ? RedTeam : BlueTeam;
+            Team team = BlueTeam.Players.Contains(player) ? RedTeam : BlueTeam;
 
             MessagePlayers($"&S{player.truename} captured the {team.Name} flag!");
             player.Extras["CTF_HAS_FLAG"] = false;

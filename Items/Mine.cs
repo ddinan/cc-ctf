@@ -10,32 +10,32 @@ namespace CTF.Items
         public Player Owner { get; private set; }
         public bool IsActive = false;
 
-        public Mine(Player p, Position location)
+        public Mine(Player player, Position location)
         {
             Location = location;
-            Owner = p;
+            Owner = player;
         }
     }
 
     public class Mines
     {
-        public static void HandlePlayerMove(Player p, Position next, byte yaw, byte pitch, ref bool cancel)
+        public static void HandlePlayerMove(Player player, Position next, byte yaw, byte pitch, ref bool cancel)
         {
             int x = player.Pos.BlockX;
             int y = player.Pos.BlockY;
             int z = player.Pos.BlockZ;
 
-            Lobby lobby = LobbyManager.GetPlayerLobby(p);
+            Lobby lobby = LobbyManager.GetPlayerLobby(player);
             if (lobby == null) return;
 
-            if (!lobby.BlueTeam.Players.Contains(p) && !lobby.RedTeam.Players.Contains(p)) return;
+            if (!lobby.BlueTeam.Players.Contains(player) && !lobby.RedTeam.Players.Contains(player)) return;
 
             List<Mine> mines = new List<Mine>();
 
             foreach (Mine mine in lobby.mines)
             {
                 if (!mine.IsActive) continue;
-                if (mine.Owner == p) continue;
+                if (mine.Owner == player) continue;
 
                 if (Math.Abs(x - mine.Location.X) <= 2 &&
                     Math.Abs(y - mine.Location.Y) <= 2 &&
@@ -47,19 +47,19 @@ namespace CTF.Items
 
             if (mines.Count > 0)
             {
-                lobby.RespawnPlayer(p);
+                lobby.RespawnPlayer(player);
             }
 
             foreach (Mine mine in mines)
             {
                 player.Message($"There was a mine at {mine.Location.X} {mine.Location.Y} {mine.Location.Z}.");
-                RemoveMine(p, mine, lobby);
+                RemoveMine(player, mine, lobby);
             }
         }
 
-        public static void RemoveMine(Player p, Mine mine, Lobby lobby)
+        public static void RemoveMine(Player player, Mine mine, Lobby lobby)
         {
-            lobby.Map.UpdateBlock(p, (ushort)mine.Location.X, (ushort)mine.Location.Y, (ushort)mine.Location.Z, Block.Air);
+            lobby.Map.UpdateBlock(player, (ushort)mine.Location.X, (ushort)mine.Location.Y, (ushort)mine.Location.Z, Block.Air);
             player.Message($"Removed a mine at {mine.Location.X} {mine.Location.Y} {mine.Location.Z}.");
             lobby.mines.Remove(mine);
         }

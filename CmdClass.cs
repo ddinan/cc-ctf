@@ -11,7 +11,7 @@ namespace CTF
         public override string shortcut { get { return "kit"; } }
         public override string type { get { return "information"; } }
 
-        public override void Use(Player p, string message, CommandData data)
+        public override void Use(Player player, string message, CommandData data)
         {
             string[] args = message.SplitSpaces();
 
@@ -32,7 +32,7 @@ namespace CTF
                 return;
             }
 
-            Lobby lobby = LobbyManager.GetPlayerLobby(p);
+            Lobby lobby = LobbyManager.GetPlayerLobby(player);
 
             if (lobby != null && lobby.IsGameRunning)
             {
@@ -48,10 +48,10 @@ namespace CTF
                 return;
             }
 
-            SetClass(p, args[0]);
+            SetClass(player, args[0]);
         }
 
-        private void SetClass(Player p, string className)
+        private void SetClass(Player player, string className)
         {
             Dictionary<string, PlayerClass> classMappings = new Dictionary<string, PlayerClass>
             {
@@ -80,7 +80,7 @@ namespace CTF
             }
         }
 
-        public override void Help(Player p)
+        public override void Help(Player player)
         {
             player.Message("%T/Class [class name] %H- Sets your active class to [class name].");
         }

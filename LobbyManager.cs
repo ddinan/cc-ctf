@@ -9,23 +9,23 @@ namespace CTF
         public static List<Lobby> lobbies = new List<Lobby>();
         public static int nextLobbyId = 1; // Starting lobby ID.
 
-        public static void CreateNewLobby(Player p)
+        public static void CreateNewLobby(Player player)
         {
             Lobby newLobby = new Lobby(nextLobbyId);
             lobbies.Add(newLobby);
 
             string map = $"lobby{newLobby.LobbyId}_map1";
-            if (!LevelActions.Copy(p, "map1", map)) return;
-            LevelActions.Load(p, map, false);
+            if (!LevelActions.Copy(player, "map1", map)) return;
+            LevelActions.Load(player, map, false);
             newLobby.Map = LevelInfo.FindExact(map); // Set the lobby's active map.
             newLobby.UpdateMapConfig(newLobby.Map);
 
             player.Message($"&SNew lobby created with ID &b{newLobby.LobbyId}&7.");
 
             // Immediately join the new lobby after creating it.
-            if (p != Player.Console)
+            if (player != Player.Console)
             {
-                JoinLobby(p, newLobby.LobbyId);
+                JoinLobby(player, newLobby.LobbyId);
             }
             else
             {
@@ -37,7 +37,7 @@ namespace CTF
             nextLobbyId++;
         }
 
-        public static void JoinLobby(Player p, int lobbyId, bool justConnected = false)
+        public static void JoinLobby(Player player, int lobbyId, bool justConnected = false)
         {
             Lobby lobby = FindLobbyById(lobbyId);
 
@@ -47,23 +47,23 @@ namespace CTF
                 return;
             }
 
-            if (lobby.Players.Contains(p))
+            if (lobby.Players.Contains(player))
             {
                 player.Message("&cYou are already in this lobby.");
                 return;
             }
 
-            if (GetPlayerLobby(p) != null)
+            if (GetPlayerLobby(player) != null)
             {
-                LeaveLobby(p);
+                LeaveLobby(player);
             }
 
             if (lobby.Map != null && !justConnected)
             {
-                PlayerActions.ChangeMap(p, lobby.Map);
+                PlayerActions.ChangeMap(player, lobby.Map);
             }
 
-            lobby.AddPlayer(p);
+            lobby.AddPlayer(player);
 
             lobby.MessagePlayers($"&a+ &b{player.truename} &Sjoined the lobby &5({lobby.Players.Count} players)&S.");
         }
@@ -97,13 +97,13 @@ namespace CTF
             return null;
         }
 
-        public static void LeaveLobby(Player p)
+        public static void LeaveLobby(Player player)
         {
             foreach (var lobby in lobbies)
             {
-                if (lobby.ContainsPlayer(p))
+                if (lobby.ContainsPlayer(player))
                 {
-                    lobby.RemovePlayer(p);
+                    lobby.RemovePlayer(player);
                     lobby.MessagePlayers($"&c- &b{player.truename} &Sleft the lobby &5({lobby.Players.Count} players)&S.");
                     return;
                 }
