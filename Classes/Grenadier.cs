@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CTF.Items;
+using MCGalaxy;
 
 namespace CTF.Classes
 {
@@ -8,16 +9,20 @@ namespace CTF.Classes
 
         public Grenadier() : base("Grenadier", ClassType.Support, true, 90) { }
 
-        public override void UseAbility()
+        public override void UseAbility(Player player)
         {
+            PowerUpCooldown = MaxPowerUpCooldown;
+
             if (HasGrenade)
             {
-                Console.WriteLine("Throwing grenade!");
+                player.Message("Throwing grenade!");
+                Grenade grenade = new Grenade();
+                grenade.ThrowGrenade(player, (ushort)Orientation.PackedToDegrees(player.Rot.RotY), (ushort)Orientation.PackedToDegrees(player.Rot.HeadX));
                 HasGrenade = false;
             }
             else
             {
-                Console.WriteLine("No grenades left!");
+                player.Message("No grenades left!");
             }
         }
 

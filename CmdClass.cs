@@ -11,8 +11,21 @@ namespace CTF
         public override string shortcut { get { return "kit"; } }
         public override string type { get { return "information"; } }
 
+        public override void Help(Player player)
+        {
+            player.Message("%T/Class [class name] %H- Sets your active class to [class name].");
+        }
+
         public override void Use(Player player, string message, CommandData data)
         {
+            Lobby lobby = LobbyManager.GetPlayerLobby(player);
+
+            if (lobby == null)
+            {
+                player.Message("&cYou need to be in a lobby to use this command.");
+                return;
+            }
+
             string[] args = message.SplitSpaces();
 
             if (message.Length == 0)
@@ -32,9 +45,36 @@ namespace CTF
                 return;
             }
 
-            Lobby lobby = LobbyManager.GetPlayerLobby(player);
+            if (message.CaselessEq("usePowerUp"))
+            {
+                if (!PlayerClassManager.HasActiveClass(player.truename)) return;
 
-            if (lobby != null && lobby.IsGameRunning)
+                PlayerClass playerClass = PlayerClassManager.GetPlayerClass(player.truename);
+                if (playerClass == null) return;
+
+                if (!lobby.IsGameRunning)
+                {
+                    player.Message("&cPlease wait until the game has started to use power ups.");
+                    return;
+                }
+
+                if (playerClass.Name.CaselessEq("Pyromaniac") && player.Extras.GetBoolean("CTF_FLAMETHROWER_ACTIVATED"))
+                { // Turning the flamethrower off shouldn't affect the cooldown.
+                    playerClass.UseAbility(player);
+                    return;
+                }
+
+                if (playerClass.PowerUpCooldown > 0)
+                {
+                    player.Message($"&cYou need to wait &b{playerClass.PowerUpCooldown}s &cto use this power up.");
+                    return;
+                }
+
+                playerClass.UseAbility(player);
+                return;
+            }
+
+            if (lobby.IsGameRunning)
             {
                 player.Message("&cYou may not change classes during a game.");
                 return;
@@ -78,11 +118,6 @@ namespace CTF
             {
                 player.Message($"&cClass &b{formattedClassName}&c does not exist.");
             }
-        }
-
-        public override void Help(Player player)
-        {
-            player.Message("%T/Class [class name] %H- Sets your active class to [class name].");
         }
     }
 }

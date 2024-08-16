@@ -1,4 +1,4 @@
-﻿using System;
+﻿using MCGalaxy;
 
 namespace CTF.Classes
 {
@@ -8,16 +8,18 @@ namespace CTF.Classes
 
         public Guardian() : base("Guardian", ClassType.Support, true, 120) { }
 
-        public override void UseAbility()
+        public override void UseAbility(Player player)
         {
+            PowerUpCooldown = MaxPowerUpCooldown;
+
             if (CanRevive)
             {
-                Console.WriteLine("Reviving player!");
+                player.Message("Reviving player!");
                 CanRevive = false;
             }
             else
             {
-                Console.WriteLine("No revives left!");
+                player.Message("No revives left!");
             }
         }
 

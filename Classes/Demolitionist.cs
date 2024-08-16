@@ -1,4 +1,4 @@
-﻿using System;
+﻿using MCGalaxy;
 
 namespace CTF.Classes
 {
@@ -8,9 +8,11 @@ namespace CTF.Classes
 
         public Demolitionist() : base("Demolitionist", ClassType.Offense, false, 150) { }
 
-        public override void UseAbility()
+        public override void UseAbility(Player player)
         {
-            Console.WriteLine($"Placing TNT with {TNTRadius}-block radius!");
+            PowerUpCooldown = MaxPowerUpCooldown;
+
+            player.Message($"Placing TNT with {TNTRadius}-block radius!");
         }
     }
 }

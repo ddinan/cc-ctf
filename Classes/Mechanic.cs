@@ -1,4 +1,4 @@
-﻿using System;
+﻿using MCGalaxy;
 
 namespace CTF.Classes
 {
@@ -8,17 +8,12 @@ namespace CTF.Classes
 
         public Mechanic() : base("Mechanic", ClassType.Defense, true, 15) { }
 
-        public override void UseAbility()
+        public override void UseAbility(Player player)
         {
-            if (Mines > 0)
-            {
-                Console.WriteLine("Placing mine!");
-                Mines--;
-            }
-            else
-            {
-                Console.WriteLine("No mines left!");
-            }
+            PowerUpCooldown = MaxPowerUpCooldown;
+
+            player.Message("Placing mine!");
+            Mines--;
         }
 
         public void ResetMines()

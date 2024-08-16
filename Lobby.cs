@@ -1,6 +1,7 @@
 ﻿using CTF.Items;
 using MCGalaxy;
 using MCGalaxy.Commands;
+using MCGalaxy.DB;
 using MCGalaxy.Maths;
 using MCGalaxy.Tasks;
 using System;
@@ -153,12 +154,18 @@ namespace CTF
                 return;
             }
 
+            foreach (Player player in Players)
+            { // Decrease cooldowns for player power ups.
+                if (!PlayerClassManager.HasActiveClass(player.truename)) continue;
+
+                PlayerClass playerClass = PlayerClassManager.GetPlayerClass(player.truename);
+                if (playerClass == null) continue;
+                if (playerClass.PowerUpCooldown > 0) playerClass.PowerUpCooldown--;
+            }
+
             Gui.SendGuiToPlayers(Players);
 
             MessagePlayers($"&SLobby {LobbyId} - Time left: {timeLeft.Minutes}:{timeLeft.Seconds}");
-
-            // Update game state, check conditions, etc.
-            // Example: Check if any team has won, update player states, etc.
         }
 
         public void EndGame(bool shutdown = false)

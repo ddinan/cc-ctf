@@ -2,6 +2,7 @@
 using MCGalaxy;
 using MCGalaxy.Events.PlayerEvents;
 using MCGalaxy.Maths;
+using MCGalaxy.Network;
 using System.Collections.Generic;
 
 using BlockID = System.UInt16;
@@ -163,6 +164,11 @@ namespace CTF
 
         private void HandlePlayerFinishConnecting(Player player)
         {
+            if (player.Supports(CpeExt.TextHotkey) && player.hasCP437)
+            { // Initialize hotkeys if the player's client allows them.
+                player.Send(Packet.TextHotKey("UsePowerUp", "/Class usePowerUp◙", 18, 0, true)); // E.
+            }
+
             LobbyManager.JoinLobby(player, 1, true);
         }
     }

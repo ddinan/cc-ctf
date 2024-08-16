@@ -1,4 +1,4 @@
-﻿using System;
+﻿using MCGalaxy;
 
 namespace CTF.Classes
 {
@@ -8,16 +8,18 @@ namespace CTF.Classes
 
         public Shield() : base("Shield", ClassType.Hybrid, true, 150) { }
 
-        public override void UseAbility()
+        public override void UseAbility(Player player)
         {
+            PowerUpCooldown = MaxPowerUpCooldown;
+
             if (ShieldDurability > 0)
             {
-                Console.WriteLine("Using shield!");
+                player.Message("Using shield!");
                 ShieldDurability--;
             }
             else
             {
-                Console.WriteLine("Shield is broken!");
+                player.Message("Shield is broken!");
             }
         }
 

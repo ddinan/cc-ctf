@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CTF.Items;
+using MCGalaxy;
 
 namespace CTF.Classes
 {
@@ -6,9 +7,12 @@ namespace CTF.Classes
     {
         public Bridger() : base("Bridger", ClassType.Hybrid, true, 60) { }
 
-        public override void UseAbility()
+        public override void UseAbility(Player player)
         {
-            Console.WriteLine("Building a line bridge!");
+            PowerUpCooldown = MaxPowerUpCooldown;
+
+            Bridge.BuildBridge(player, (ushort)Orientation.PackedToDegrees(player.Rot.RotY), (ushort)Orientation.PackedToDegrees(player.Rot.HeadX));
+            player.Message("Building a line bridge!");
         }
     }
 }

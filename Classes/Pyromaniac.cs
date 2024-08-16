@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CTF.Items;
+using MCGalaxy;
 
 namespace CTF.Classes
 {
@@ -8,16 +9,23 @@ namespace CTF.Classes
 
         public Pyromaniac() : base("Pyromaniac", ClassType.Offense, true, 120) { }
 
-        public override void UseAbility()
+        public override void UseAbility(Player player)
         {
-            if (Fuel > 0)
+            PowerUpCooldown = MaxPowerUpCooldown;
+
+            if (player.Extras.GetBoolean("CTF_FLAMETHROWER_ACTIVATED"))
             {
-                Console.WriteLine("Using flamethrower!");
-                Fuel -= 10; // Example fuel consumption
+                player.Message("flamethrower off");
+                player.Extras["CTF_FLAMETHROWER_ACTIVATED"] = false;
+                return;
             }
+
             else
             {
-                Console.WriteLine("Out of fuel!");
+                player.Message("flamethrower on");
+                Flamethrower flamethrower = new Flamethrower();
+                flamethrower.ActivateFlamethrower(player, (ushort)Orientation.PackedToDegrees(player.Rot.RotY), (ushort)Orientation.PackedToDegrees(player.Rot.HeadX));
+                return;
             }
         }
 
