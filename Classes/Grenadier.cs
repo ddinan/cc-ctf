@@ -15,7 +15,7 @@ namespace CTF.Classes
                 Grenade grenade = new Grenade();
 
                 grenade.ThrowGrenade(player);
-                PowerUpCooldown = MaxPowerUpCooldown;
+                SetCooldown();
             }
             else
             {

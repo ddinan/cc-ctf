@@ -68,7 +68,7 @@ namespace CTF
             {
                 player.Message("grenade");
                 Grenade grenade = new Grenade();
-                grenade.ThrowGrenade(player, yaw, pitch);
+                grenade.ThrowGrenade(player);
                 return;
             }
 
@@ -85,7 +85,7 @@ namespace CTF
                 {
                     player.Message("flamethrower on");
                     Flamethrower flamethrower = new Flamethrower();
-                    flamethrower.ActivateFlamethrower(player, yaw, pitch);
+                    flamethrower.ActivateFlamethrower(player);
                     return;
                 }
             }
@@ -93,7 +93,7 @@ namespace CTF
             if (heldBlock == Block.Yellow)
             {
                 player.Message("bridge");
-                Bridge.BuildBridge(player, yaw, pitch);
+                Bridge.BuildBridge(player);
                 return;
             }
 
@@ -101,7 +101,7 @@ namespace CTF
             {
                 player.Message("rocket");
                 Rocket rocket = new Rocket();
-                rocket.LaunchRocket(player, yaw, pitch);
+                rocket.LaunchRocket(player);
                 return;
             }
 

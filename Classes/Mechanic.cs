@@ -10,7 +10,7 @@ namespace CTF.Classes
 
         public override void UseAbility(Player player)
         {
-            PowerUpCooldown = MaxPowerUpCooldown;
+            SetCooldown();
 
             player.Message("Placing mine!");
             Mines--;

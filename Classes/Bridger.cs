@@ -9,7 +9,7 @@ namespace CTF.Classes
 
         public override void UseAbility(Player player)
         {
-            PowerUpCooldown = MaxPowerUpCooldown;
+            SetCooldown();
 
             Bridge.BuildBridge(player);
             player.Message("Building a line bridge!");

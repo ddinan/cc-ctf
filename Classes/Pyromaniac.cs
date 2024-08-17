@@ -11,7 +11,7 @@ namespace CTF.Classes
 
         public override void UseAbility(Player player)
         {
-            PowerUpCooldown = MaxPowerUpCooldown;
+            SetCooldown();
 
             if (player.Extras.GetBoolean("CTF_FLAMETHROWER_ACTIVATED"))
             {

@@ -159,7 +159,7 @@ namespace CTF
 
                 PlayerClass playerClass = PlayerClassManager.GetPlayerClass(player.truename);
                 if (playerClass == null) continue;
-                if (playerClass.PowerUpCooldown > 0) playerClass.PowerUpCooldown--;
+                if (playerClass.PowerUpCooldown > 0) playerClass.DecrementCooldown();
             }
 
             Gui.SendGuiToPlayers(Players);
