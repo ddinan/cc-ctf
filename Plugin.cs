@@ -3,8 +3,9 @@ using MCGalaxy;
 using MCGalaxy.Events.PlayerEvents;
 using MCGalaxy.Maths;
 using MCGalaxy.Network;
+using System;
 using System.Collections.Generic;
-
+using System.IO;
 using BlockID = System.UInt16;
 
 namespace CTF
@@ -26,6 +27,26 @@ namespace CTF
             OnPlayerFinishConnectingEvent.Register(HandlePlayerFinishConnecting, Priority.Low);
             OnPlayerMoveEvent.Register(Mines.HandlePlayerMove, Priority.Low);
 
+            if (Directory.Exists("./levels/"))
+            { // Delete any ghost lobby levels.
+                string[] files = Directory.GetFiles("./levels/", "lobby*.*");
+
+                foreach (string file in files)
+                {
+                    if (file.EndsWith(".lvl", StringComparison.OrdinalIgnoreCase) || file.EndsWith(".backup", StringComparison.OrdinalIgnoreCase))
+                    {
+                        try
+                        {
+                            File.Delete(file);
+                        }
+
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error deleting file {file}: {ex.Message}");
+                        }
+                    }
+                }
+            }
 
             LobbyManager.CreateNewLobby(Player.Console); // Create the default lobby.
         }
