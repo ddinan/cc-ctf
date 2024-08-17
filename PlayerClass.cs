@@ -15,7 +15,7 @@ namespace CTF
         public string Name { get; private set; }
         public ClassType ClassType { get; private set; }
         public bool CanSprint { get; private set; }
-        public bool HasTNT { get; private set; } = true;
+        public bool HasTNT = true;
         public static int MaxPowerUpCooldown = 0;
         public int PowerUpCooldown = MaxPowerUpCooldown;
         public string PowerUpOpacity => PowerUpCooldown > 0 ? "&8" : "&f";

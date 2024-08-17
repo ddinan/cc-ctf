@@ -11,7 +11,7 @@ namespace CTF.Classes
         {
             PowerUpCooldown = MaxPowerUpCooldown;
 
-            Bridge.BuildBridge(player, (ushort)Orientation.PackedToDegrees(player.Rot.RotY), (ushort)Orientation.PackedToDegrees(player.Rot.HeadX));
+            Bridge.BuildBridge(player);
             player.Message("Building a line bridge!");
         }
     }

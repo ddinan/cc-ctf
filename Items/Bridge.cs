@@ -10,10 +10,9 @@ namespace CTF.Items
 {
     public class Bridge
     {
-        public static async void BuildBridge(Player player, ushort yaw, ushort pitch)
+        public static async void BuildBridge(Player player)
         {
-            Vec3F32 dir = DirUtils.GetDirVectorExt(yaw, pitch);
-            Vec3F32 normalizedDir = Vec3F32.Normalise(dir);
+            Vec3F32 dir = DirUtils.GetDirVector(player.Rot.RotY, player.Rot.HeadX);
 
             Vec3F32 currentPos = new Vec3F32(player.Pos.BlockX, player.Pos.BlockY, player.Pos.BlockZ);
 
@@ -30,7 +29,7 @@ namespace CTF.Items
 
                 await Task.Delay(15);
 
-                currentPos += normalizedDir;
+                currentPos += dir;
             }
         }
     }

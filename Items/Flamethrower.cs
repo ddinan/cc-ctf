@@ -14,9 +14,9 @@ namespace CTF.Items
     {
         Dictionary<Player, FlamethrowerData> activeFlamethrowers = new Dictionary<Player, FlamethrowerData>();
 
-        public void ActivateFlamethrower(Player player, ushort yaw, ushort pitch)
+        public void ActivateFlamethrower(Player player)
         {
-            Vec3F32 dir = DirUtils.GetDirVectorExt(yaw, pitch);
+            Vec3F32 dir = DirUtils.GetDirVector(player.Rot.RotY, player.Rot.HeadX);
 
             FlamethrowerData data = MakeArgs(player, dir);
             activeFlamethrowers[player] = data;

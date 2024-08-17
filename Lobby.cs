@@ -1,7 +1,6 @@
 ﻿using CTF.Items;
 using MCGalaxy;
 using MCGalaxy.Commands;
-using MCGalaxy.DB;
 using MCGalaxy.Maths;
 using MCGalaxy.Tasks;
 using System;
@@ -23,7 +22,7 @@ namespace CTF
         public SchedulerTask Task;
         public Level Map = null;
 
-        private MapVoting mapVoting;
+        private readonly MapVoting mapVoting;
 
         public MapConfig config = new MapConfig();
 
@@ -172,7 +171,7 @@ namespace CTF
         {
             MessagePlayers($"&SGame ended in Lobby {LobbyId}!");
 
-            // Reset game state
+            // Reset game state.
             IsGameRunning = false;
             GameEndTime = DateTime.MinValue;
 

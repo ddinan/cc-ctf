@@ -24,7 +24,7 @@ namespace CTF.Classes
             {
                 player.Message("flamethrower on");
                 Flamethrower flamethrower = new Flamethrower();
-                flamethrower.ActivateFlamethrower(player, (ushort)Orientation.PackedToDegrees(player.Rot.RotY), (ushort)Orientation.PackedToDegrees(player.Rot.HeadX));
+                flamethrower.ActivateFlamethrower(player);
                 return;
             }
         }

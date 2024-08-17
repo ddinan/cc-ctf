@@ -12,9 +12,9 @@ namespace CTF.Items
     {
         readonly Dictionary<Player, GrenadeData> activeGrenades = new Dictionary<Player, GrenadeData>();
 
-        public void ThrowGrenade(Player player, ushort yaw, ushort pitch)
+        public void ThrowGrenade(Player player)
         {
-            Vec3F32 dir = DirUtils.GetDirVectorExt(yaw, pitch);
+            Vec3F32 dir = DirUtils.GetDirVector(player.Rot.RotY, player.Rot.HeadX);
 
             GrenadeData data = MakeArgs(player, dir);
             activeGrenades[player] = data;

@@ -12,9 +12,9 @@ namespace CTF.Items
     {
         readonly Dictionary<Player, RocketData> activeRockets = new Dictionary<Player, RocketData>();
 
-        public void LaunchRocket(Player player, ushort yaw, ushort pitch)
+        public void LaunchRocket(Player player)
         {
-            Vec3F32 dir = DirUtils.GetDirVectorExt(yaw, pitch);
+            Vec3F32 dir = DirUtils.GetDirVector(player.Rot.RotY, player.Rot.HeadX);
 
             RocketData data = MakeArgs(player, dir);
             activeRockets[player] = data;

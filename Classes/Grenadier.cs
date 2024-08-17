@@ -5,30 +5,22 @@ namespace CTF.Classes
 {
     public class Grenadier : PlayerClass
     {
-        public bool HasGrenade { get; private set; } = true;
-
         public Grenadier() : base("Grenadier", ClassType.Support, true, 90) { }
 
         public override void UseAbility(Player player)
         {
-            PowerUpCooldown = MaxPowerUpCooldown;
-
-            if (HasGrenade)
+            if (PowerUpCooldown == 0)
             {
                 player.Message("Throwing grenade!");
                 Grenade grenade = new Grenade();
-                grenade.ThrowGrenade(player, (ushort)Orientation.PackedToDegrees(player.Rot.RotY), (ushort)Orientation.PackedToDegrees(player.Rot.HeadX));
-                HasGrenade = false;
+
+                grenade.ThrowGrenade(player);
+                PowerUpCooldown = MaxPowerUpCooldown;
             }
             else
             {
                 player.Message("No grenades left!");
             }
-        }
-
-        public void ResetGrenade()
-        {
-            HasGrenade = true;
         }
     }
 }

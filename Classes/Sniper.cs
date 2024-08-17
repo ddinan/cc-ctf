@@ -13,7 +13,7 @@ namespace CTF.Classes
 
             player.Message("Shooting sniper rifle! Delay of 5 seconds before next shot.");
             Rocket rocket = new Rocket();
-            rocket.LaunchRocket(player, player.Rot.RotY, player.Rot.HeadX);
+            rocket.LaunchRocket(player);
         }
     }
 }
